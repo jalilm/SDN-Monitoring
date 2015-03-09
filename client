@@ -1,0 +1,8 @@
+#tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap
+tcpreplay -K -l 0 -t -i h1-eth0 ~/SDN-Monitoring/tmp/sync.pcap &
+pid=$!
+tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130100.UTC.anon.pcap
+tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130200.UTC.anon.pcap
+tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130300.UTC.anon.pcap
+tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130400.UTC.anon.pcap
+kill -9 $pid
