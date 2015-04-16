@@ -22,7 +22,7 @@ class RandomTreeTopo(Topo):
         random.shuffle(switches)
         while num_links > 0:
             current_fanout = random_generator.randint(1, num_links)
-            for i in irange(1, current_fanout):
+            for _ in irange(1, current_fanout):
                 self.addLink(switches[current_switch], switches[k - num_links])
-                num_links = num_links - 1
-            current_switch = current_switch + 1
+                num_links -= 1
+            current_switch += 1

@@ -2,7 +2,6 @@ import time
 
 from src.SDM.BaseTest import BaseTest
 from src.SDM.TraceTopo import TraceTopo
-from src.SDM.util import irange
 from src.pulling.RyuRemoteController import RyuRemoteController
 
 

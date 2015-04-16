@@ -28,7 +28,7 @@ class ConnectedTopo(Topo):
             self.addLink(switches[prev_sw_idx], switches[i])
             links[i].append(prev_sw_idx)
             links[prev_sw_idx].append(i)
-            num_links = num_links - 1
+            num_links -= 1
         available_switches = irange(0, k - 1)
         while num_links > 0:
             first_idx = random_generator.choice(available_switches)
@@ -40,4 +40,4 @@ class ConnectedTopo(Topo):
             self.addLink(switches[first_idx], switches[second_idx])
             links[first_idx].append(second_idx)
             links[second_idx].append(first_idx)
-            num_links = num_links - 1
+            num_links -= 1

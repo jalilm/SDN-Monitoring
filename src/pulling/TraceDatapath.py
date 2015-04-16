@@ -1,8 +1,10 @@
+from multiprocessing import Lock
+
 from src.SDM.util import *
 from src.SDM.InPortRule import InPortRule
 from src.SDM.MainDatapath import MainDatapath
-from src.SDM.IPv4DestinationRule import IPv4DestinationRule
-from multiprocessing import Lock
+from src.SDM.IPDestRule import IPDestRule
+
 
 class TraceDatapath(MainDatapath):
     def __init__(self, datapath):
@@ -32,7 +34,7 @@ class TraceDatapath(MainDatapath):
 
         ipv4_string = '0.0.0.0'
         subnet_string = CIDR_mask_to_ipv4_subnet_mask(1)
-        rule = IPv4DestinationRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
+        rule = IPDestRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
         self.frontier_locks[rule] = Lock()
@@ -40,7 +42,7 @@ class TraceDatapath(MainDatapath):
 
         ipv4_string = '128.0.0.0'
         subnet_string = CIDR_mask_to_ipv4_subnet_mask(1)
-        rule = IPv4DestinationRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
+        rule = IPDestRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
         self.frontier_locks[rule] = Lock()
@@ -51,10 +53,3 @@ class TraceDatapath(MainDatapath):
             rule.add_flow_and_goto_next_table(actions)
             self.round_status[rule] = 0
 
-    # def set_main_monitor_table(self):
-    #     ofproto = self.datapath.ofproto
-    #     parser = self.datapath.ofproto_parser
-    #     actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
-    #                                       ofproto.OFPCML_NO_BUFFER)]
-    #     rule = Rule(self.datapath, 0, 0)
-    #     rule.add_flow_and_apply_actions(actions)

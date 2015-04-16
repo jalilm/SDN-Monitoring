@@ -35,8 +35,7 @@ class SimpleSwitch13(app_manager.RyuApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        bands = []
-        bands.append(parser.OFPMeterBandDscpRemark(0,0,0,None,None))
+        bands = [parser.OFPMeterBandDscpRemark(0, 0, 0, None, None)]
         req = parser.OFPMeterMod(datapath)
         datapath.send_msg(req)
 
@@ -52,7 +51,8 @@ class SimpleSwitch13(app_manager.RyuApp):
                                           ofproto.OFPCML_NO_BUFFER)]
         self.add_flow(datapath, 0, match, actions)
 
-    def add_flow(self, datapath, priority, match, actions):
+    @staticmethod
+    def add_flow(datapath, priority, match, actions):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 

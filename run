@@ -1,4 +1,4 @@
-for i in ./config/*; do
+for i in ./config/parameters5.cfg; do
 	cp $i ./config/parameters.cfg
 	base=`basename "${i}" | cut -d"." -f1`
 	~/wireshark/tshark -i lo -w "./logs/${base}.pcap" &
@@ -7,3 +7,4 @@ for i in ./config/*; do
 	kill -9 $pid
 	mv /tmp/c0.log ./logs/con-${base}.log
 done
+

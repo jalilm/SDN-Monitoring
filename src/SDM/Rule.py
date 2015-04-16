@@ -3,27 +3,32 @@ class Rule(object):
     A class that represents a rule in the switch table.
     """
 
-    def __init__(self, datapath, table_id, priority):
+    def __init__(self, datapath, table_id=0, priority=0, father_rule=None):
         self.datapath = datapath
         self.table_id = table_id
         self.priority = priority
-        self.match = self.datapath.ofproto_parser.OFPMatch()
+        self.father_rule = father_rule
+        self.match_args = {}
+        self.match = self.datapath.ofproto_parser.OFPMatch(**self.match_args)
+
+    def __repr__(self):
+        return "Rule(" + repr(self.datapath) + ", " + repr(self.table_id) + \
+               ", " + repr(self.priority) + ")"
 
     def __str__(self):
-        return self.match.__str__()
+        return "Rule"
+        # datapath:{} table_id:{} priority:{} father_rule:{} match:{}" \
+        #    .format(self.datapath, self.table_id, self.priority, self.father_rule,
+        #            ','.join(['%s=%s' % (k, v) for k, v in self.match_args.iteritems()]))
 
     def __hash__(self):
-        """
-        Hash value according to immutable ipv4_string and subnet_string.
-        :return: hash value.
-        """
-        return self.match.__hash__()
+        return self.__repr__().__hash__()
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        return isinstance(other, Rule) and self.match == other.match
+        return type(other) == type(self) and hash(self) == hash(other)
 
     def get_match(self):
         """
@@ -32,10 +37,23 @@ class Rule(object):
         due to bug that prohibits more than serialization of such object
         thus preventing saving the matches aside.
         """
-        copy_match = self.datapath.ofproto_parser.OFPMatch()
+        copy_match = self.datapath.ofproto_parser.OFPMatch(**self.match_args)
         return copy_match
 
+    def add_match_arg(self, key, value):
+        self.match_args[key] = value
+        self.update_match()
+
+    def update_match(self):
+        self.match = self.datapath.ofproto_parser.OFPMatch(**self.match_args)
+
     def get_finer_rules(self):
+        return self
+
+    def get_coarse_rule(self):
+        return self.father_rule
+
+    def get_paired_rule(self):
         return self
 
     def next_table_id(self):
@@ -60,14 +78,6 @@ class Rule(object):
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
         self.add_flow(inst)
 
-    def add_flow_and_send_to_meter(self, meter_id, actions):
-        ofproto = self.datapath.ofproto
-        parser = self.datapath.ofproto_parser
-
-        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions),
-                parser.OFPInstructionMeter(meter_id)]
-        self.add_flow(inst)
-
     def add_flow_and_goto_next_table(self, actions):
         ofproto = self.datapath.ofproto
         parser = self.datapath.ofproto_parser
@@ -75,6 +85,14 @@ class Rule(object):
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions),
                 parser.OFPInstructionGotoTable(self.next_table_id())]
 
+        self.add_flow(inst)
+
+    def add_flow_and_send_to_meter(self, meter_id, actions):
+        ofproto = self.datapath.ofproto
+        parser = self.datapath.ofproto_parser
+
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions),
+                parser.OFPInstructionMeter(meter_id)]
         self.add_flow(inst)
 
     def add_meter_dscp(self, meter_id):

@@ -54,15 +54,16 @@ class STP13(app_manager.RyuApp):
         self.add_flow_and_goto_table(datapath, flow_table_id, meter_table_id, priority, match, actions)
         self.add_flow_and_send_to_meter(datapath, meter_table_id, meter_id, priority, match, actions)
 
-    def add_meter_dscp(self, datapath, meter_id):
+    @staticmethod
+    def add_meter_dscp(datapath, meter_id):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         bands= [parser.OFPMeterBandDscpRemark(1,1,0,None,None)]
         meter_mod = parser.OFPMeterMod(datapath, meter_id=meter_id, bands=bands, flags=ofproto.OFPMF_PKTPS|ofproto.OFPMF_STATS)
         datapath.send_msg(meter_mod)
 
-    def add_flow_and_send_to_meter(self, datapath, table_id, meter_id, priority, match, actions):
-        ofproto = datapath.ofproto
+    @staticmethod
+    def add_flow_and_send_to_meter(datapath, table_id, meter_id, priority, match, actions):
         parser = datapath.ofproto_parser
 
         inst = [parser.OFPInstructionMeter(meter_id)]
@@ -71,7 +72,8 @@ class STP13(app_manager.RyuApp):
                                 match=match, instructions=inst)
         datapath.send_msg(mod)
 
-    def add_flow_and_apply_actions(self, datapath, table_id, priority, match, actions):
+    @staticmethod
+    def add_flow_and_apply_actions(datapath, table_id, priority, match, actions):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
@@ -82,13 +84,26 @@ class STP13(app_manager.RyuApp):
                                 match=match, instructions=inst)
         datapath.send_msg(mod)
 
-    def add_flow_and_goto_table(self, datapath, table_id, goto_table_id, priority, match, actions):
-        ofproto = datapath.ofproto
+    @staticmethod
+    def add_flow_and_goto_table(datapath, table_id, goto_table_id, priority, match, actions):
         parser = datapath.ofproto_parser
 
         inst = [parser.OFPInstructionGotoTable(goto_table_id)]
 
         mod = parser.OFPFlowMod(datapath=datapath, table_id=table_id, priority=priority,
+                                match=match, instructions=inst)
+        datapath.send_msg(mod)
+
+    @staticmethod
+    def add_flow(datapath, priority, match, actions):
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
+                                             actions),
+		parser.OFPInstructionMeter()]
+
+        mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
                                 match=match, instructions=inst)
         datapath.send_msg(mod)
 

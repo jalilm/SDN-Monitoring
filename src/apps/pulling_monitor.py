@@ -38,7 +38,6 @@ class PullingMonitor(simple_switch_stp_13.STP13):
 
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
-        ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
         req = parser.OFPFlowStatsRequest(datapath)
@@ -79,8 +78,8 @@ class PullingMonitor(simple_switch_stp_13.STP13):
                          '-------- ----------------- '
                          '-------- --------')
         for stat in sorted([flow for flow in body if flow.priority == 1],
-                           key=lambda flow: (flow.match['in_port'],
-                                             flow.match['eth_dst'])):
+                           key=lambda f: (f.match['in_port'],
+                                             f.match['eth_dst'])):
 
             self.logger.info('%016x %8x %17s %8d %8d',
                              ev.msg.datapath.id,

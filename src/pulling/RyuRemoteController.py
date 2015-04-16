@@ -3,11 +3,12 @@ from mininet.log import error
 
 
 class RyuRemoteController(Controller):
+    # noinspection PyPep8Naming
     def __init__(self, name="c0", ip="127.0.0.1",
                  port=6633, *ryuArgs, **kwargs):
         """Init.
            name: name to give controller
-           noxArgs: arguments (strings) to pass to NOX"""
+           ryuArgs: arguments (strings) to pass to RYU"""
         if not ryuArgs:
             ryuArgs = kwargs['ryuArgs']
             if not ryuArgs:

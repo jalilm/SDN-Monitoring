@@ -1,4 +1,4 @@
-"Utility functions."
+"""Utility functions."""
 
 from ConfigParser import RawConfigParser
 
@@ -37,9 +37,8 @@ def get_params(directories, fresh=False):
     config = RawConfigParser()
     config.read(directories['config'] + 'parameters.cfg')
 
-    params = {}
+    params = {'RunParameters': {}, 'General': {}, 'Client': {}, 'Server': {}, 'FlowLimits': {}}
 
-    params['RunParameters'] = {}
     number_of_stations = config.getint('RunParameters', 'numberOfStations')
     params['RunParameters']['numberOfStations'] = number_of_stations
     params['RunParameters']['topoType'] = config.get('RunParameters',
@@ -52,9 +51,8 @@ def get_params(directories, fresh=False):
     params['RunParameters']['state'] = config.get('RunParameters',
                                                   'state')
     params['RunParameters']['ryuApps'] = config.get('RunParameters',
-                                                  'ryuApps')
+                                                    'ryuApps')
 
-    params['General'] = {}
     params['General']['fileToSendPath'] = directories['home'] + \
                                           config.get('General', 'fileToSendPath')
     params['General']['sharedMemFilePath'] = directories['home'] + \
@@ -80,7 +78,6 @@ def get_params(directories, fresh=False):
                                                         'controllerPort')
     params['General']['listenPort'] = config.getint('General', 'listenPort')
 
-    params['Client'] = {}
     params['Client']['numberOfThreads'] = config.getint('Client',
                                                         'numberOfThreads')
     params['Client']['maxConnections'] = config.getint('Client',
@@ -88,14 +85,12 @@ def get_params(directories, fresh=False):
     params['Client']['maxSleepDelay'] = config.getfloat('Client',
                                                         'maxSleepDelay')
 
-    params['Server'] = {}
     params['Server']['drainTimeout'] = config.getfloat('Server',
                                                        'drainTimeout')
     params['Server']['numberOfThreads'] = config.getint('Server',
                                                         'numberOfThreads')
     params['Server']['port'] = config.getint('Server', 'port')
 
-    params['FlowLimits'] = {}
     for (name, value) in config.items('FlowLimits'):
         params['FlowLimits'][name] = float(value)
 
@@ -128,14 +123,15 @@ def int_to_ipv4(ip):
     return ".".join(map(lambda n: str(ip >> n & 0xFF), [24, 16, 8, 0]))
 
 
+# noinspection PyPep8Naming
 def CIDR_mask_to_ipv4_subnet_mask(CIDR_mask):
-    assert CIDR_mask >= 0 and CIDR_mask <= 32
+    assert 0 <= CIDR_mask <= 32
     res = ''
     full_levels = CIDR_mask / 8
     curr_level = CIDR_mask % 8
     empty_levels = 4 - 1 - CIDR_mask / 8
     for i in range(0, full_levels):
-        res = res + '255.'
+        res += '255.'
     if full_levels < 4:
         curr_level_mask = 0
         for i in range(0, curr_level):
@@ -144,7 +140,7 @@ def CIDR_mask_to_ipv4_subnet_mask(CIDR_mask):
             curr_level_mask = (curr_level_mask << 1) | 0
         res = res + str(curr_level_mask) + '.'
     for i in range(0, empty_levels):
-        res = res + '0.'
+        res += '0.'
     return res[:-1]
 
 
@@ -155,7 +151,7 @@ def get_index_of_least_sig_one(ipv4_string):
     curr = ''
     for ip in ip_arr:
         if int(ip) == 0:
-            res = res - 8
+            res -= 8
         else:
             curr = bin(int(ip))[2:].zfill(8)[::-1]
             break
@@ -163,7 +159,7 @@ def get_index_of_least_sig_one(ipv4_string):
         return res
     for i in range(0, 8):
         if int(curr[i]) == 0:
-            res = res - 1
+            res -= 1
         else:
             break
     return res
@@ -176,5 +172,5 @@ def get_paired_ipv4(ipv4_string, mask_ip):
     tmp = "1".zfill(ls1)[::-1]
     xor_mask = int("0b" + tmp.zfill(32)[::-1], 2)
     ip_int = ipv4_to_int(ipv4_string)
-    ip_int = ip_int ^ xor_mask
+    ip_int ^= xor_mask
     return int_to_ipv4(ip_int)

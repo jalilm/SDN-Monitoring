@@ -2,7 +2,7 @@ from multiprocessing import Lock
 import re
 
 from util import *
-from src.SDM.IPv4DestinationRule import IPv4DestinationRule
+from src.SDM.IPDestRule import IPDestRule
 from src.SDM.Datapath import Datapath
 
 
@@ -46,7 +46,7 @@ class MainDatapath(Datapath):
             ipv4_string = '10.0.' + m.group(3) + '.0'
             subnet_string = '255.255.255.0'
 
-        rule = IPv4DestinationRule(self.datapath, ipv4_string, subnet_string, 0, 0, None)
+        rule = IPDestRule(self.datapath, ipv4_string, subnet_string, 0, 0, None)
         actions = [self.datapath.ofproto_parser.OFPActionOutput(port_id)]
         rule.add_flow_and_goto_next_table(actions)
 
@@ -59,11 +59,12 @@ class MainDatapath(Datapath):
 
         ipv4_string = '10.0.' + str(self.id) + '.0'
         subnet_string = CIDR_mask_to_ipv4_subnet_mask(24)
-        rule = IPv4DestinationRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
+        rule = IPDestRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
         self.frontier_locks[rule] = Lock()
         self.frontier_bw[rule] = 0
+
         # Till here
 
         for rule in self.next_frontier:
@@ -103,14 +104,10 @@ class MainDatapath(Datapath):
             return False  # Alert
         if rule not in self.frontier:
             print "rule is not in subrules - 1"
-            # TODO Should be able to assert False
-            #return True
             assert False
         with self.frontier_locks[rule]:
             if rule not in self.frontier:
                 print "rule is not in subrules - 2"
-                # TODO Should be able to assert False
-                #return True
                 assert False
             orig_rule = self.get_original_rule(rule)
             self.set_refined_monitoring_rules(orig_rule)
@@ -125,7 +122,7 @@ class MainDatapath(Datapath):
                 self.frontier_locks[r] = Lock()
                 self.next_frontier.append(r)
                 self.frontier_bw[r] = 0
-                self.sibling_rule[r] = list(set(rules)-set([r]))
+                self.sibling_rule[r] = list(set(rules)- {r})
                 r.add_flow_and_goto_next_table(actions)
 
         self.round_status[rule] = True
@@ -140,8 +137,6 @@ class MainDatapath(Datapath):
             return (False,"I'm root rule")
         if orig_rule not in self.frontier:
             print "rule is not in subrules - 3"
-            # TODO Should be able to assert False
-            #return True
             assert False
 
         with self.frontier_locks[orig_rule]:
@@ -153,13 +148,13 @@ class MainDatapath(Datapath):
         sibling = self.sibling_rule[rule][0]
 
         with self.frontier_locks[sibling]:
-            if(sibling not in self.frontier):
+            if sibling not in self.frontier:
                 self.next_frontier.append(rule)
                 return (False, "waiting for bro children")
-            if (self.round_status[sibling] == True):
+            if self.round_status[sibling]:
                 self.next_frontier.append(rule)
                 return (False, "staying with bro")
-            if (self.round_status[sibling] == None):
+            if self.round_status[sibling] is None:
                 self.next_frontier.append(rule)
                 return (False, "waiting for bro")
 
