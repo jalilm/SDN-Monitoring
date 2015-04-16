@@ -174,3 +174,11 @@ def get_paired_ipv4(ipv4_string, mask_ip):
     ip_int = ipv4_to_int(ipv4_string)
     ip_int ^= xor_mask
     return int_to_ipv4(ip_int)
+
+def get_class( kls ):
+    parts = kls.split('.')
+    module = ".".join(parts[:-1])
+    m = __import__( module )
+    for comp in parts[1:]:
+        m = getattr(m, comp)
+    return m

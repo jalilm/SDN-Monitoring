@@ -3,7 +3,7 @@
 import os
 import mmap
 
-from src.SDM.util import get_dirs, get_params
+from src.SDM.util import get_dirs, get_params, get_class
 from src.SDM.NormalTest import NormalTest
 from src.SDM.MonitorTest import MonitorTest
 from src.SDM.TraceTest import TraceTest
@@ -28,17 +28,20 @@ def main():
     with open(params['General']['sharedMemFilePath'], "r+b") as _file:
         mem_map = mmap.mmap(_file.fileno(), 0)
 
-    if params['RunParameters']['state'] == 'normal':
-        test = NormalTest(mem_map, directories, params)
-    elif params['RunParameters']['state'] == 'monitor':
-        test = MonitorTest(mem_map, directories, params)
-    elif params['RunParameters']['state'] == 'trace':
-        test = TraceTest(mem_map, directories, params)
-    else:
-        os.remove(params['General']['sharedMemFilePath'])
-        mem_map.close()
-        raise Exception('Please provide a valid test at' +
-                        ' state configuration in parameters.cfg')
+    test_class = get_class(params['RunParameters']['state'])
+    print test_class
+    test = test_class(mem_map, directories, params)
+    #if params['RunParameters']['state'] == 'normal':
+    #     test = NormalTest(mem_map, directories, params)
+    # elif params['RunParameters']['state'] == 'monitor':
+    #     test = MonitorTest(mem_map, directories, params)
+    # elif params['RunParameters']['state'] == 'trace':
+    #     test = TraceTest(mem_map, directories, params)
+    # else:
+    #     os.remove(params['General']['sharedMemFilePath'])
+    #     mem_map.close()
+    #     raise Exception('Please provide a valid test at' +
+    #                     ' state configuration in parameters.cfg')
     test.run()
     test.merge_logs()
     os.remove(params['General']['sharedMemFilePath'])
