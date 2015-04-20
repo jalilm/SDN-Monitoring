@@ -1,8 +1,7 @@
 import abc
 import logging
 
-from src.SDM.SysctlHost import SysctlHost
-from mininet.topo import LinearTopo
+from src.SDM.nodes import SysctlHost
 from src.SDM.util import get_class
 from mininet.net import Mininet
 from mininet.node import OVSSwitch, RemoteController
@@ -33,29 +32,6 @@ class BaseTest(object):
         topo_class = get_class(self.params['RunParameters']['topoType'])
         self.topo = topo_class(k=self.params['RunParameters']['numberOfStations'])
 
-
-
-        # topo_type = self.params['RunParameters']['topoType']
-        # if topo_type == 'linear':
-        # self.topo = LinearTopo(k=self.
-        # params['RunParameters']['numberOfStations'])
-        # elif topo_type == 'binaryTree':
-        # self.topo = BinaryTreeTopo(k=self.
-        # params['RunParameters']['numberOfStations'])
-        # elif topo_type == 'randomTree':
-        # self.topo = RandomTreeTopo(k=self.
-        # params['RunParameters']['numberOfStations'])
-        # elif topo_type == 'circle':
-        # self.topo = CircleTopo(k=self.
-        # params['RunParameters']['numberOfStations'])
-        # elif topo_type == 'connected':
-        # self.topo = ConnectedTopo(k=self.
-        # params['RunParameters']['numberOfStations'])
-        # else:
-        # self.topo = None
-        # return self.topo
-
-
     def setup_net(self):
         """
         Used to initialize self.net according to the test scenario.
@@ -72,10 +48,11 @@ class BaseTest(object):
                            autoStaticArp=self.params['General']['autoStaticArp'],
                            autoPinCpus=self.params['General']['autoPinCpus'],
                            listenPort=self.params['General']['listenPort'])
-        # self.net.addController(RemoteController
-        # ('c0', self.params['General']['controllerIP'],
-        # self.params['General']['controllerPort']))
         return self.net
+
+    def prepare_before_run(self):
+        self.logger.debug("prepare_before_run")
+        pass
 
     def clean_after_run(self):
         self.logger.debug("clean_after_run")

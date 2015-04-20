@@ -1,6 +1,8 @@
-from src.SDM.BaseTest import BaseTest
-from src.SDM.ThreeCycleTopo import ThreeCycleTopo
 import logging
+
+from src.SDM.tests import BaseTest
+from src.SDM.topologies import ThreeCycleTopo
+
 
 class MonitorTest(BaseTest):
     """

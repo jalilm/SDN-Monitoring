@@ -11,8 +11,7 @@ import Queue
 import random
 import socket
 
-from src.SDM.MyThread import MyThread
-
+from src.SDM.scripts import MyThread
 from src.SDM.util import get_dirs, get_params
 
 

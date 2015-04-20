@@ -31,6 +31,8 @@ def main():
 
     test_class = get_class(params['RunParameters']['state'])
     test = test_class(mem_map, directories, params)
+    logger.info("Preparing before test %s", params['RunParameters']['state'])
+    test.prepare_before_run()
     logger.info("Running test %s", params['RunParameters']['state'])
     test.run()
     logger.info("Cleaning after test %s", params['RunParameters']['state'])

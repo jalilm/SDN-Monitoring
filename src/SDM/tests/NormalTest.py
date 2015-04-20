@@ -2,8 +2,10 @@ import os
 import time
 from subprocess import Popen
 import logging
+
+from src.SDM.tests import BaseTest
+
 from src.SDM.util import irange
-from src.SDM.BaseTest import BaseTest
 
 
 class NormalTest(BaseTest):

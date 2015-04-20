@@ -2,13 +2,14 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_5
-from src.pulling.SynDatapath import SynDatapath
-from src.pulling.TracePullingController import TracePullingController
+from src.SDM.apps import TracePullingController
+from src.SDM.nodes import SynDatapath
 
 #import sys
 #sys.path.append('/home/sdm/.pycharm_helpers/pycharm-debug.egg')
 #import pydevd
 #pydevd.settrace('132.68.42.133', port=58397, stdoutToServer=True, stderrToServer=True, suspend=False ,trace_only_current_thread=False)
+
 
 class SynController(TracePullingController):
     OFP_VERSIONS = [ofproto_v1_5.OFP_VERSION]
