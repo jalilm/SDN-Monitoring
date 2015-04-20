@@ -1,6 +1,7 @@
 from util import *
-from src.SDM.InPortRule import InPortRule
-from src.SDM.Datapath import Datapath
+from src.SDM.nodes import Datapath
+from src.SDM.rules import InPortRule
+
 
 class VirtualDatapath(Datapath):
     def __init__(self, datapath):

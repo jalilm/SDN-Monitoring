@@ -1,8 +1,8 @@
+from src.SDM.rules import IPRule
 from src.SDM.util import get_index_of_least_sig_one
 from src.SDM.util import ipv4_to_int
 from src.SDM.util import int_to_ipv4
 from src.SDM.util import get_paired_ipv4
-from src.SDM.IPRule import IPRule
 
 
 class IPDestRule(IPRule):

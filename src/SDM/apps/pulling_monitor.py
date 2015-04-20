@@ -1,6 +1,6 @@
 from operator import attrgetter
 
-from src.apps import simple_switch_stp_13
+from src.SDM.apps import simple_switch_stp_13
 from src.SDM.util import get_dirs, get_params
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER

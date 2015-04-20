@@ -1,4 +1,4 @@
-from src.SDM.Rule import Rule
+from src.SDM.rules import Rule
 
 
 class InPortRule(Rule):

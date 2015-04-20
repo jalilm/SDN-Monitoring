@@ -1,4 +1,4 @@
-from src.SDM.TCPIPDestRule import TCPIPDestRule
+from src.SDM.rules import TCPIPDestRule
 
 
 class FlagsDestRule(TCPIPDestRule):

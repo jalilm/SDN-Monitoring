@@ -10,7 +10,7 @@ import random
 import time
 import mmap
 
-from src.SDM.MyThread import MyThread
+from src.SDM.scripts import MyThread
 from src.SDM.util import get_dirs, get_params
 
 

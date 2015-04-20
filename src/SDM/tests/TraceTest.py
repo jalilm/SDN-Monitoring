@@ -1,8 +1,10 @@
 import time
 import logging
-from src.SDM.BaseTest import BaseTest
-from src.SDM.TraceTopo import TraceTopo
-from src.pulling.RyuRemoteController import RyuRemoteController
+
+from src.SDM.nodes import RyuRemoteController
+
+from src.SDM.tests import BaseTest
+from src.SDM.topologies import TraceTopo
 
 
 class TraceTest(BaseTest):
@@ -26,7 +28,8 @@ class TraceTest(BaseTest):
         self.net.addController(RyuRemoteController(name="c0", ip=self.params['General']['controllerIP'],
                                                    port=self.params['General']['controllerPort'],
                                                    ryuArgs=["",
-                                                            "~/SDN-Monitoring/src/pulling/TracePullingController.py"]))
+                                                            self.params['RunParameters']['ryuApps']]))
+                                                            #"~/SDN-Monitoring/src/pulling/TracePullingController.py"]))
         return self.net
 
     def run(self):
