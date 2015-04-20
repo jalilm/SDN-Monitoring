@@ -1,6 +1,9 @@
 """Utility functions."""
 
 from ConfigParser import RawConfigParser
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_dirs(fresh=False):
@@ -9,19 +12,24 @@ def get_dirs(fresh=False):
     directories.
     If fresh=True, the dict is regenerated.
     """
+    logger.debug("Called get_dirs with fresh=%s", fresh)
     if fresh == False and "dirs" in get_dirs.__dict__:
+        logger.debug("get_dirs returned with result: %s", get_dirs.dirs)
         return get_dirs.dirs
+
     # TODO: See how to fix this?!
     home_path = '/home/sdm/SDN-Monitoring/'
 
-    get_dirs.dirs = {'home': home_path,
-                     'config': home_path + 'config/',
-                     'util': home_path + 'util/',
-                     'src': home_path + 'src/SDM/',
-                     'log': home_path + 'logs/',
-                     'bin': home_path + 'bin/',
-                     'tmp': home_path + 'tmp/'
+    get_dirs.dirs = {
+        'home': home_path,
+        'config': home_path + 'config/',
+        'util': home_path + 'util/',
+        'src': home_path + 'src/SDM/',
+        'log': home_path + 'logs/',
+        'bin': home_path + 'bin/',
+        'tmp': home_path + 'tmp/'
     }
+    logger.debug("get_dirs returned with result: %s", get_dirs.dirs)
     return get_dirs.dirs
 
 
@@ -31,7 +39,9 @@ def get_params(directories, fresh=False):
     in ${PROJ_PATH}\\config\\parameters.cfg.
     If fresh=True, the dist is regenerated.
     """
+    logger.debug("Called get_params with fresh=%s", fresh)
     if fresh == False and "params" in get_params.__dict__:
+        logger.debug("get_params returned with result: %s", get_params.params)
         return get_params.params
 
     config = RawConfigParser()
@@ -95,6 +105,7 @@ def get_params(directories, fresh=False):
         params['FlowLimits'][name] = float(value)
 
     get_params.params = params
+    logger.debug("get_params returned with result: %s", get_params.params)
     return get_params.params
 
 
@@ -175,10 +186,11 @@ def get_paired_ipv4(ipv4_string, mask_ip):
     ip_int ^= xor_mask
     return int_to_ipv4(ip_int)
 
-def get_class( kls ):
+
+def get_class(kls):
     parts = kls.split('.')
     module = ".".join(parts[:-1])
-    m = __import__( module )
+    m = __import__(module)
     for comp in parts[1:]:
         m = getattr(m, comp)
     return m
