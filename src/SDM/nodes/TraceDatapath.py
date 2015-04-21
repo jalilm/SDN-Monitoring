@@ -1,9 +1,9 @@
 from multiprocessing import Lock
 
-from src.SDM.nodes import MainDatapath
-from src.SDM.rules import IPDestRule
+from src.SDM.nodes.MainDatapath import MainDatapath
+from src.SDM.rules.IPDestRule import IPDestRule
 from src.SDM.util import *
-from src.SDM.InPortRule import InPortRule
+from src.SDM.rules.InPortRule import InPortRule
 
 
 class TraceDatapath(MainDatapath):

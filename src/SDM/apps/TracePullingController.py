@@ -8,7 +8,7 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib import hub
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
-from src.SDM.nodes import TraceDatapath
+from src.SDM.nodes.TraceDatapath import TraceDatapath
 from src.SDM.util import *
 from src.SDM.rules.IPDestRule import IPDestRule
 from src.SDM.rules.Rule import Rule

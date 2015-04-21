@@ -1,7 +1,7 @@
 import logging
 
-from src.SDM.tests import BaseTest
-from src.SDM.topologies import ThreeCycleTopo
+from src.SDM.tests.BaseTest import BaseTest
+from src.SDM.topologies.ThreeCycleTopo import ThreeCycleTopo
 
 
 class MonitorTest(BaseTest):
@@ -19,5 +19,4 @@ class MonitorTest(BaseTest):
 
     def setup_topo(self):
         self.logger.debug("setup_topo")
-        self.topo = ThreeCycleTopo()
-        return self.topo
+        return ThreeCycleTopo()

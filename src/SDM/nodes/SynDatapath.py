@@ -1,9 +1,10 @@
 from multiprocessing import Lock
 
 from src.SDM.nodes import MainDatapath
-from src.SDM.rules import TCPIPDestRule, FlagsDestRule
+from src.SDM.rules.FlagsDestRule import FlagsDestRule
+from src.SDM.rules.TCPIPDestRule import TCPIPDestRule
 from src.SDM.util import *
-from src.SDM.InPortRule import InPortRule
+from src.SDM.rules.InPortRule import InPortRule
 
 
 class SynDatapath(MainDatapath):

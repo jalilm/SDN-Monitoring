@@ -1,9 +1,9 @@
 from multiprocessing import Lock
 import re
 
-from util import *
-from src.SDM.nodes import Datapath
-from src.SDM.rules import IPDestRule
+from src.SDM.util import *
+from src.SDM.nodes.Datapath import Datapath
+from src.SDM.rules.IPDestRule import IPDestRule
 
 
 class MainDatapath(Datapath):

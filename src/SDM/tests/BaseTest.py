@@ -1,7 +1,7 @@
 import abc
 import logging
 
-from src.SDM.nodes import SysctlHost
+from src.SDM.nodes.SysctlHost import SysctlHost
 from src.SDM.util import get_class
 from mininet.net import Mininet
 from mininet.node import OVSSwitch, RemoteController
@@ -18,9 +18,8 @@ class BaseTest(object):
         self.directories = directories
         self.params = params
         self.logger = logging.getLogger(__name__)
-        # Assignment is not really needed, just to avoid pylint complaints.
-        self.topo = self.setup_topo()
-        self.net = self.setup_net()
+        self.topo = None
+        self.net = None
 
     def setup_topo(self):
         """
@@ -30,14 +29,14 @@ class BaseTest(object):
         self.logger.debug("Setting up topo type: %s with %s stations", self.params['RunParameters']['topoType'],
                           self.params['RunParameters']['numberOfStations'])
         topo_class = get_class(self.params['RunParameters']['topoType'])
-        self.topo = topo_class(k=self.params['RunParameters']['numberOfStations'])
+        return topo_class(k=self.params['RunParameters']['numberOfStations'])
 
     def setup_net(self):
         """
         Used to initialize self.net according to the test scenario.
         """
         self.logger.debug("Setting up mininet")
-        self.net = Mininet(self.topo, switch=OVSSwitch,
+        return Mininet(self.topo, switch=OVSSwitch,
                            controller=RemoteController,
                            host=SysctlHost,
                            build=False, xterms=self.params['General']['xterms'],
@@ -48,10 +47,11 @@ class BaseTest(object):
                            autoStaticArp=self.params['General']['autoStaticArp'],
                            autoPinCpus=self.params['General']['autoPinCpus'],
                            listenPort=self.params['General']['listenPort'])
-        return self.net
 
     def prepare_before_run(self):
         self.logger.debug("prepare_before_run")
+        self.topo = self.setup_topo()
+        self.net = self.setup_net()
         pass
 
     def clean_after_run(self):
