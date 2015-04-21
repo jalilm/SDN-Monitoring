@@ -1,9 +1,9 @@
-for i in ./config/parameters5.cfg; do
+for i in ./config/parameters1.cfg; do
 	cp $i ./config/parameters.cfg
 	base=`basename "${i}" | cut -d"." -f1`
 	~/wireshark/tshark -i lo -w "./logs/${base}.pcap" &
 	pid=$!
-	PYTHONPATH=$PYTHONPATH ./src/SDM/run_env.py
+	PYTHONPATH=$PYTHONPATH ./src/SDM/scripts/run_env.py
 	kill -9 $pid
 	mv /tmp/c0.log ./logs/con-${base}.log
 done
