@@ -1,4 +1,4 @@
-from src.SDM.rules import TCPIPDestRule
+from src.SDM.rules.TCPIPDestRule import TCPIPDestRule
 
 
 class FlagsDestRule(TCPIPDestRule):
@@ -11,7 +11,7 @@ class FlagsDestRule(TCPIPDestRule):
         self.add_match_arg('tcp_flags', tcp_flags)
 
     def __repr__(self):
-        return "TCPIPDestRule(" + repr(self.datapath) + ", " + repr(self.ipv4_string) + ", " \
+        return "FlagsDestRule(" + repr(self.datapath) + ", " + repr(self.ipv4_string) + ", " \
                + ", " + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ", " + \
                repr(self.match_args['tcp_flags']) + ")"
 
