@@ -1,5 +1,5 @@
 from multiprocessing import Lock
-
+from time import strftime, localtime, time
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -14,7 +14,6 @@ from src.SDM.rules.IPDestRule import IPDestRule
 from src.SDM.rules.Rule import Rule
 from src.SDM.rules.InPortRule import InPortRule
 
-
 class TracePullingController(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
@@ -27,6 +26,9 @@ class TracePullingController(app_manager.RyuApp):
         self.datapaths = {}
         self.limits = {}
         self.res_lock = Lock()
+
+    def info(self, msg, *args, **kwargs):
+        self.logger.info(str(time()) + " " + msg, *args, **kwargs)
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -55,11 +57,11 @@ class TracePullingController(app_manager.RyuApp):
         while True:
             hub.sleep(self.params['RunParameters']['timeStep'])
             time_step_number += 1
-            self.logger.info('')
-            self.logger.info('Time step #%d', time_step_number)
+            self.info('')
+            self.info('Time step #%d - ' + strftime("%H:%M:%S", localtime()), time_step_number)
             for dp in self.datapaths:
                 dpp = self.datapaths[dp]
-                self.logger.info('Sending stats request: %016x', dpp.id)
+                self.info('Sending stats request: %016x', dpp.id)
                 dpp.request_stats()
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
@@ -85,32 +87,32 @@ class TracePullingController(app_manager.RyuApp):
                     stat.duration_sec + (stat.duration_nsec / 1000000000.0))
 
                 if main_datapath.frontier_bw[rule] > self.get_rule_limit(rule):
-                    self.logger.info('datapath         '
+                    self.info('datapath         '
                                      'ipv4-dst                           '
                                      'bandwidth          duration bytes')
-                    self.logger.info('---------------- '
+                    self.info('---------------- '
                                      '---------------------------------- '
                                      '------------------ -------- --------')
 
-                    self.logger.info('%016x %34s %018.9f %08d %08d',
+                    self.info('%016x %34s %018.9f %08d %08d',
                                      ev.msg.datapath.id,
                                      rule,
                                      main_datapath.frontier_bw[rule],
                                      stat.duration_sec,
                                      stat.byte_count)
                     if not main_datapath.increase_monitoring_level(rule):
-                        self.logger.info('Alert! traffic of flow %s is above threshold', rule)
+                        self.info('Alert! traffic of flow %s is above threshold', rule)
                     else:
-                        self.logger.info('Finer monitoring rules for %s were added', rule)
+                        self.info('Finer monitoring rules for %s were added', rule)
                 elif main_datapath.frontier_bw[rule] <= (self.get_rule_limit(rule) / 2):
-                    self.logger.info('datapath         '
+                    self.info('datapath         '
                                      'ipv4-dst                           '
                                      'bandwidth          duration bytes')
-                    self.logger.info('---------------- '
+                    self.info('---------------- '
                                      '---------------------------------- '
                                      '------------------ -------- --------')
 
-                    self.logger.info('%016x %34s %018.9f %08d %08d',
+                    self.info('%016x %34s %018.9f %08d %08d',
                                      ev.msg.datapath.id,
                                      rule,
                                      main_datapath.frontier_bw[rule],
@@ -118,31 +120,31 @@ class TracePullingController(app_manager.RyuApp):
                                      stat.byte_count)
                     res = main_datapath.reduce_monitoring_level(rule)
                     if not res[0]:
-                        self.logger.info('Not reducing monitoring level for %s: %s', rule, res[1])
+                        self.info('Not reducing monitoring level for %s: %s', rule, res[1])
                     else:
-                        self.logger.info('Removed finer monitoring rules for %s and %s', res[1], res[2])
+                        self.info('Removed finer monitoring rules for %s and %s', res[1], res[2])
                 else:
-                    self.logger.info('datapath         '
+                    self.info('datapath         '
                                      'ipv4-dst                           '
                                      'bandwidth          duration bytes')
-                    self.logger.info('---------------- '
+                    self.info('---------------- '
                                      '---------------------------------- '
                                      '------------------ -------- --------')
 
-                    self.logger.info('%016x %34s %018.9f %08d %08d',
+                    self.info('%016x %34s %018.9f %08d %08d',
                                      ev.msg.datapath.id,
                                      rule,
                                      main_datapath.frontier_bw[rule],
                                      stat.duration_sec,
                                      stat.byte_count)
-                    self.logger.info('Keeping the rule %s for monitoring', rule)
+                    self.info('Keeping the rule %s for monitoring', rule)
                     main_datapath.keep_monitoring_level(rule)
 
     def get_rule_limit(self, rule):
         return 3000000
 
     # def get_rule_limit(self, rule):
-    # self.logger.info('get rule limit for %s', rule)
+    # self.info('get rule limit for %s', rule)
     # if self.limits.get((rule.ipv4_string, rule.subnet_string)) != None:
     #         return self.limits[(rule.ipv4_string, rule.subnet_string)]
     #     if rule.subnet_string == "255.255.255.255":
@@ -170,7 +172,7 @@ class TracePullingController(app_manager.RyuApp):
         dpid = datapath.id
         self.mac_to_port.setdefault(dpid, {})
 
-        self.logger.info("packet in %016x %s %s %s", dpid, src, dst, in_port)
+        self.info("packet in %016x %s %s %s", dpid, src, dst, in_port)
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
