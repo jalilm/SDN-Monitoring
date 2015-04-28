@@ -60,6 +60,7 @@ class SrcTracePullingController(TracePullingController):
                                      stat.byte_count)
                     if not main_datapath.increase_monitoring_level(rule):
                         self.info('Alert! traffic of flow %s is above threshold', rule)
+                        self.alert()
                     else:
                         self.info('Finer monitoring rules for %s were added', rule)
                 elif main_datapath.frontier_bw[rule] <= (self.get_rule_limit(rule) / 2):

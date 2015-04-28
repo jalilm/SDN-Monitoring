@@ -71,6 +71,8 @@ def get_params(directories, fresh=False):
                                                            'startGenerationToken')
     params['General']['finishGenerationToken'] = config.get('General',
                                                             'finishGenerationToken')
+    params['General']['alertToken'] = config.get('General',
+                                                            'alertToken')
     params['General']['recvSize'] = config.getint('General', 'recvSize')
     params['General']['ipBase'] = config.get('General', 'ipBase')
     params['General']['xterms'] = config.getboolean('General', 'xterms')

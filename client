@@ -1,3 +1,4 @@
+#!/bin/bash
 tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap
 tcpreplay -K -l 0 -t -i h1-eth0 ~/SDN-Monitoring/tmp/sync.pcap &
 pid=$!

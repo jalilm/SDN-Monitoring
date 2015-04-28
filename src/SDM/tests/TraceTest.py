@@ -5,6 +5,7 @@ from src.SDM.nodes.RyuRemoteController import RyuRemoteController
 from src.SDM.tests.BaseTest import BaseTest
 from src.SDM.topologies.TraceTopo import TraceTopo
 from src.SDM.util import get_dirs, get_params
+from threading import Thread
 
 
 class TraceTest(BaseTest):
@@ -35,9 +36,9 @@ class TraceTest(BaseTest):
         Executes the test and Mininet and the tcpreplay.
         """
         self.logger.info("run")
-        self.net.build()
-        self.net.interact()
-        return
+        #self.net.build()
+        #self.net.interact()
+        #return
         self.logger.debug("starting the net")
         self.net.start()
 
@@ -45,24 +46,34 @@ class TraceTest(BaseTest):
         # check if we can get rid of it.
         self.logger.debug("sleeping got 10 sec")
         sleep(10)
-
+        t=Thread(target=TraceTest.detectAlert, args=(self,))
+        t.start()
         host1 = self.net.get('h1')
-        # TODO: Sending 5 minutes data - Fix me!
         self.logger.info(strftime(" - %H:%M:%S ", localtime()) +  "Started sending traces from h1")
-        host1.cmd('bash ~/SDN-Monitoring/trace_before')
-        self.logger.info(strftime(" - %H:%M:%S ", localtime()) +"Attack started traces from h1")
-        host1.cmd('bash ~/SDN-Monitoring/attack')
-        self.logger.info(strftime(" - %H:%M:%S ", localtime()) +"Attack finished from h1")
-        host1.cmd('bash ~/SDN-Monitoring/trace_after')
+        host1.cmd('~/SDN-Monitoring/trace_before')
+        self.logger.info(strftime(" - %H:%M:%S ", localtime()) + "Attack started traces from h1")
+        host1.cmd('~/SDN-Monitoring/attack')
+        self.logger.info(strftime(" - %H:%M:%S ", localtime()) + "Attack finished from h1")
+        host1.cmd('~/SDN-Monitoring/trace_after')
         self.logger.debug("Stopping the net")
-        self.net.stop()
+        if str(self.shared_mem_fd[:6]) != self.params['General']['alertToken']:
+            self.shared_mem_fd[:6] = self.params['General']['finishGenerationToken']
+            sleep(self.params['RunParameters']['timeStep']+1)
+            self.net.stop()
+
+    def detectAlert(self):
+        time_step = self.params['RunParameters']['timeStep']
+        while str(self.shared_mem_fd[:6]) == self.params['General']['startGenerationToken']:
+            sleep(time_step)
+        if str(self.shared_mem_fd[:6]) == self.params['General']['alertToken']:
+            self.net.stop()
 
     def clean_after_run(self):
         self.logger.debug("clean_after_run")
         dirs = get_dirs()
         params = get_params(dirs)
         sdm_log_file = dirs['log'] + '/SDM.log'
-        output_log_file = dirs['log'] + '/parameters' + str(params['RunParameters']['timeStep']) + '.log'
+        output_log_file = dirs['log'] + '/parameters' + str(int(params['RunParameters']['timeStep'])) + '.log'
         os.system("cat /tmp/c0.log " + sdm_log_file+ " | sort -n -s > " + output_log_file)
         os.system("rm /tmp/c0.log")
         os.system("rm " + sdm_log_file)

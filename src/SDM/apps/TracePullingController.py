@@ -13,6 +13,7 @@ from src.SDM.util import *
 from src.SDM.rules.IPDestRule import IPDestRule
 from src.SDM.rules.Rule import Rule
 from src.SDM.rules.InPortRule import InPortRule
+import mmap
 
 class TracePullingController(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -102,6 +103,7 @@ class TracePullingController(app_manager.RyuApp):
                                      stat.byte_count)
                     if not main_datapath.increase_monitoring_level(rule):
                         self.info('Alert! traffic of flow %s is above threshold', rule)
+                        self.alert()
                     else:
                         self.info('Finer monitoring rules for %s were added', rule)
                 elif main_datapath.frontier_bw[rule] <= (self.get_rule_limit(rule) / 2):
@@ -141,7 +143,7 @@ class TracePullingController(app_manager.RyuApp):
                     main_datapath.keep_monitoring_level(rule)
 
     def get_rule_limit(self, rule):
-        return 3000000
+        return 1500000
 
     # def get_rule_limit(self, rule):
     # self.info('get rule limit for %s', rule)
@@ -196,3 +198,14 @@ class TracePullingController(app_manager.RyuApp):
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
                                   in_port=in_port, actions=actions, data=data)
         datapath.send_msg(out)
+
+    def alert(self):
+        with open(self.params['General']['sharedMemFilePath'], "wb") as _file:
+            logger.debug("Opened shared memory file to write start of generation token")
+            _file.write(self.params['General']['startGenerationToken'])
+
+        with open(self.params['General']['sharedMemFilePath'], "r+b") as _file:
+            mem_map = mmap.mmap(_file.fileno(), 0)
+
+        mem_map[:6] = self.params['General']['alertToken']
+        mem_map.close()

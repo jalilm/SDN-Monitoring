@@ -1,4 +1,7 @@
+#!/bin/bash
+
 tcpreplay -K -l 0 -t -i h1-eth0 ~/SDN-Monitoring/tmp/sync.pcap &
 pid=$!
-tcpreplay -M 22 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130100.UTC.anon.pcap
+# TODO: Repeating 5 minutes data - Fix me!
+tcpreplay -M 22 -l 7 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130100.UTC.anon.pcap
 kill -9 $pid
