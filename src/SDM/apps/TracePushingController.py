@@ -142,6 +142,7 @@ class TracePushingController(app_manager.RyuApp):
                     self.info('Keeping the rule %s for monitoring', rule)
                     main_datapath.keep_monitoring_level(rule)
 
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def get_rule_threshold(self, rule):
         return 1500000
 

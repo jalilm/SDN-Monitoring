@@ -11,6 +11,7 @@ class MainDatapath(Datapath):
 
     def __init__(self, datapath, first_monitoring_table_id):
         super(MainDatapath, self).__init__(datapath)
+        self.mac_reg = re.compile(MainDatapath.BASE_MAC + '0(\d):(\d)(\d)')
         self.first_monitoring_table_id = first_monitoring_table_id
         self.root_rules = []
         self.frontier = []
@@ -22,7 +23,6 @@ class MainDatapath(Datapath):
         self.sibling_rule = {}
 
     def calc_id(self):
-        self.mac_reg = re.compile(MainDatapath.BASE_MAC + '0(\d):(\d)(\d)')
         for port_id in self.datapath.ports:
             m = self.mac_reg.match(self.datapath.ports[port_id].hw_addr)
             if m.group(1) == m.group(2):
@@ -135,7 +135,7 @@ class MainDatapath(Datapath):
         orig_rule = self.get_original_rule(rule)
         if orig_rule in self.root_rules:
             self.next_frontier.append(orig_rule)
-            return (False,"I'm root rule")
+            return False,"I'm root rule"
         if orig_rule not in self.frontier:
             print "rule is not in subrules - 3"
             assert False
@@ -151,13 +151,13 @@ class MainDatapath(Datapath):
         with self.frontier_locks[sibling]:
             if sibling not in self.frontier:
                 self.next_frontier.append(rule)
-                return (False, "waiting for bro children")
+                return False, "waiting for bro children"
             if self.round_status[sibling]:
                 self.next_frontier.append(rule)
-                return (False, "staying with bro")
+                return False, "staying with bro"
             if self.round_status[sibling] is None:
                 self.next_frontier.append(rule)
-                return (False, "waiting for bro")
+                return False, "waiting for bro"
 
         corase_rule = rule.get_coarse_rule()
 
@@ -173,7 +173,7 @@ class MainDatapath(Datapath):
         self.frontier_values.pop(sibling, None)
         self.frontier_locks.pop(rule)
         self.frontier_locks.pop(sibling)
-        return (True, rule, sibling)
+        return True, rule, sibling
 
     def keep_monitoring_level(self, rule):
         orig_rule = self.get_original_rule(rule)

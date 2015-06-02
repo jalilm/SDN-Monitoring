@@ -12,16 +12,14 @@ from ryu.ofproto import ofproto_v1_2
 from ryu.ofproto import ofproto_v1_3
 from ryu.ofproto import ofproto_v1_4
 from ryu.ofproto import ofproto_v1_5
-from ryu import exception
-
 from src.SDM.util import bytes_to_ipv4
 
 
 class ProxyThread(Thread, ofproto_protocol.ProtocolDesc):
-    def __init__(self, controllerIP, controllerPort, protocol):
+    def __init__(self, controller_ip, controller_port, protocol):
         Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
-        self.logger.debug("Created ProxyThread, %s:%s", controllerIP, controllerPort)
+        self.logger.debug("Created ProxyThread, %s:%s", controller_ip, controller_port)
         self.protocol = protocol
         self.OFP_VERSIONS = []
         if not self.protocol:
@@ -41,10 +39,10 @@ class ProxyThread(Thread, ofproto_protocol.ProtocolDesc):
                     ofproto_protocol.ProtocolDesc.__init__(ofproto_v1_4.OFP_VERSION)
                 if v == 5:
                     ofproto_protocol.ProtocolDesc.__init__(ofproto_v1_5.OFP_VERSION)
-        self.controllerIP = controllerIP
-        self.controllerPort = controllerPort
+        self.controllerIP = controller_ip
+        self.controllerPort = controller_port
         self.myIP = "127.0.0.1"
-        self.myPort = controllerPort + 1
+        self.myPort = controller_port + 1
         self.switchPort = None
         self.switchIP = None
         self.toControllerSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -130,15 +128,15 @@ class ProxyThread(Thread, ofproto_protocol.ProtocolDesc):
         self.connected = False
 
 
-class MiddleWare():
-    def __init__(self, controllerIP="127.0.0.1", switchIP=None, controllerPort=6633, switchPort=None, protocols=None):
+class MiddleWare(object):
+    def __init__(self, controller_ip="127.0.0.1", switch_ip=None, controller_port=6633, switch_port=None, protocols=None):
         self.logger = logging.getLogger(__name__)
         self.logger.info("Created MiddleWare")
-        self.controllerIP = controllerIP
-        self.switchIP = switchIP
-        self.controllerPort = controllerPort
-        self.switchPort = switchPort
-        self.fromSwitchProxy = ProxyThread(controllerIP, controllerPort, protocols)
+        self.controllerIP = controller_ip
+        self.switchIP = switch_ip
+        self.controllerPort = controller_port
+        self.switchPort = switch_port
+        self.fromSwitchProxy = ProxyThread(controller_ip, controller_port, protocols)
 
     def start(self):
         self.fromSwitchProxy.daemon = True

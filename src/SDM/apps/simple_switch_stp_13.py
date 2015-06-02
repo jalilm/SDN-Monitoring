@@ -62,6 +62,7 @@ class STP13(app_manager.RyuApp):
         meter_mod = parser.OFPMeterMod(datapath, meter_id=meter_id, bands=bands, flags=ofproto.OFPMF_PKTPS|ofproto.OFPMF_STATS)
         datapath.send_msg(meter_mod)
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def add_flow_and_send_to_meter(datapath, table_id, meter_id, priority, match, actions):
         parser = datapath.ofproto_parser
@@ -84,6 +85,7 @@ class STP13(app_manager.RyuApp):
                                 match=match, instructions=inst)
         datapath.send_msg(mod)
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def add_flow_and_goto_table(datapath, table_id, goto_table_id, priority, match, actions):
         parser = datapath.ofproto_parser

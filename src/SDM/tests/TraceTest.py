@@ -47,7 +47,7 @@ class TraceTest(BaseTest):
         # check if we can get rid of it.
         self.logger.debug("sleeping got 10 sec")
         sleep(10)
-        t=Thread(target=TraceTest.detectAlert, args=(self,))
+        t=Thread(target=TraceTest.detect_alert, args=(self,))
         t.start()
         host1 = self.net.get('h1')
         self.logger.info(strftime(" - %H:%M:%S ", localtime()) +  "Started sending traces from h1")
@@ -62,7 +62,7 @@ class TraceTest(BaseTest):
             sleep(self.params['RunParameters']['timeStep']+1)
             self.net.stop()
 
-    def detectAlert(self):
+    def detect_alert(self):
         time_step = self.params['RunParameters']['timeStep']
         while str(self.shared_mem_fd[:6]) == self.params['General']['startGenerationToken']:
             sleep(time_step)
