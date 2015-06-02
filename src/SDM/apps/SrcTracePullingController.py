@@ -41,10 +41,10 @@ class SrcTracePullingController(TracePullingController):
 
                 rule = IPSrcRule(ev.msg.datapath, ipv4_string, subnet_string, stat.table_id, 0, None)
 
-                main_datapath.frontier_bw[rule] = stat.byte_count / (
+                main_datapath.frontier_values[rule] = stat.byte_count / (
                     stat.duration_sec + (stat.duration_nsec / 1000000000.0))
 
-                if main_datapath.frontier_bw[rule] > self.get_rule_limit(rule):
+                if main_datapath.frontier_values[rule] > self.get_rule_threshold(rule):
                     self.info('datapath         '
                                      'ipv4-src                           '
                                      'bandwidth          duration bytes')
@@ -55,7 +55,7 @@ class SrcTracePullingController(TracePullingController):
                     self.info('%016x %34s %018.9f %08d %08d',
                                      ev.msg.datapath.id,
                                      rule,
-                                     main_datapath.frontier_bw[rule],
+                                     main_datapath.frontier_values[rule],
                                      stat.duration_sec,
                                      stat.byte_count)
                     if not main_datapath.increase_monitoring_level(rule):
@@ -63,7 +63,7 @@ class SrcTracePullingController(TracePullingController):
                         self.alert()
                     else:
                         self.info('Finer monitoring rules for %s were added', rule)
-                elif main_datapath.frontier_bw[rule] <= (self.get_rule_limit(rule) / 2):
+                elif main_datapath.frontier_values[rule] <= (self.get_rule_threshold(rule) / 2):
                     self.info('datapath         '
                                      'ipv4-src                           '
                                      'bandwidth          duration bytes')
@@ -74,7 +74,7 @@ class SrcTracePullingController(TracePullingController):
                     self.info('%016x %34s %018.9f %08d %08d',
                                      ev.msg.datapath.id,
                                      rule,
-                                     main_datapath.frontier_bw[rule],
+                                     main_datapath.frontier_values[rule],
                                      stat.duration_sec,
                                      stat.byte_count)
                     res = main_datapath.reduce_monitoring_level(rule)
@@ -93,7 +93,7 @@ class SrcTracePullingController(TracePullingController):
                     self.info('%016x %34s %018.9f %08d %08d',
                                      ev.msg.datapath.id,
                                      rule,
-                                     main_datapath.frontier_bw[rule],
+                                     main_datapath.frontier_values[rule],
                                      stat.duration_sec,
                                      stat.byte_count)
                     self.info('Keeping the rule %s for monitoring', rule)

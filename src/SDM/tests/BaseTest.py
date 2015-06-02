@@ -6,7 +6,6 @@ from src.SDM.util import get_class
 from mininet.net import Mininet
 from mininet.node import OVSSwitch, RemoteController
 
-
 class BaseTest(object):
     """
     Base class used to provide a test infrastructure for more complicated test.
@@ -23,7 +22,7 @@ class BaseTest(object):
 
     def setup_topo(self):
         """
-        Used to initialize self.topo according ot the test scenario.
+        Used to initialize self.topo according to the test scenario.
         """
 
         self.logger.debug("Setting up topo type: %s with %s stations", self.params['RunParameters']['topoType'],
@@ -31,12 +30,12 @@ class BaseTest(object):
         topo_class = get_class(self.params['RunParameters']['topoType'])
         return topo_class(k=self.params['RunParameters']['numberOfStations'])
 
-    def setup_net(self):
+    def setup_net(self, switch=OVSSwitch):
         """
         Used to initialize self.net according to the test scenario.
         """
         self.logger.debug("Setting up mininet")
-        return Mininet(self.topo, switch=OVSSwitch,
+        return Mininet(self.topo, switch=switch,
                            controller=RemoteController,
                            host=SysctlHost,
                            build=False, xterms=self.params['General']['xterms'],

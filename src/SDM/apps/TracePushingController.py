@@ -8,20 +8,20 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib import hub
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
-from src.SDM.nodes.TraceDatapath import TraceDatapath
+from src.SDM.nodes.PushingTraceDatapath import PushingTraceDatapath
 from src.SDM.util import *
 from src.SDM.rules.IPDestRule import IPDestRule
 from src.SDM.rules.Rule import Rule
 from src.SDM.rules.InPortRule import InPortRule
 import mmap
 
-class TracePullingController(app_manager.RyuApp):
+class TracePushingController(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs):
-        super(TracePullingController, self).__init__(*args, **kwargs)
+        super(TracePushingController, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
-        self.monitor_thread = hub.spawn(self._monitor)
+        #self.monitor_thread = hub.spawn(self._monitor)
         self.dirs = get_dirs()
         self.params = get_params(self.dirs)
         self.datapaths = {}
@@ -47,7 +47,7 @@ class TracePullingController(app_manager.RyuApp):
         # if len(datapath.ports) == 2:
         # For OVS there is a down local port.
         if len(datapath.ports) == 3:
-            self.datapaths[datapath] = TraceDatapath(datapath)
+            self.datapaths[datapath] = PushingTraceDatapath(datapath)
             self.datapaths[datapath].set_route_tables()
             self.datapaths[datapath].set_main_monitor_table()
         else:

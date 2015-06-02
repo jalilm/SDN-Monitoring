@@ -6,6 +6,7 @@ from src.SDM.tests.BaseTest import BaseTest
 from src.SDM.topologies.TraceTopo import TraceTopo
 from src.SDM.util import get_dirs, get_params
 from threading import Thread
+from mininet.node import OVSSwitch
 
 
 class TraceTest(BaseTest):
@@ -22,9 +23,9 @@ class TraceTest(BaseTest):
         self.logger.debug("setup_topo")
         return TraceTopo()
 
-    def setup_net(self):
+    def setup_net(self, switch=OVSSwitch):
         self.logger.debug("setup_net")
-        net = super(TraceTest, self).setup_net()
+        net = super(TraceTest, self).setup_net(switch)
         net.addController(RyuRemoteController(name="c0", ip=self.params['General']['controllerIP'],
                                               port=self.params['General']['controllerPort'],
                                               ryuArgs=["",

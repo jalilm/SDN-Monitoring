@@ -6,9 +6,9 @@ from src.SDM.util import *
 from src.SDM.rules.InPortRule import InPortRule
 
 
-class TraceDatapath(MainDatapath):
+class PushingTraceDatapath(MainDatapath):
     def __init__(self, datapath):
-        super(TraceDatapath, self).__init__(datapath, first_monitoring_table_id=1)
+        super(PushingTraceDatapath, self).__init__(datapath, first_monitoring_table_id=1)
 
     def set_route_tables(self):
         for i in irange(1, 2):

@@ -15,7 +15,8 @@ class MainDatapath(Datapath):
         self.root_rules = []
         self.frontier = []
         self.next_frontier = []
-        self.frontier_bw = {}
+        self.frontier_values = {}
+        self.frontier_default_value = 0
         self.frontier_locks = {}
         self.round_status = {}
         self.sibling_rule = {}
@@ -63,7 +64,7 @@ class MainDatapath(Datapath):
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
         self.frontier_locks[rule] = Lock()
-        self.frontier_bw[rule] = 0
+        self.frontier_values[rule] = self.frontier_default_value
 
         # Till here
 
@@ -121,14 +122,14 @@ class MainDatapath(Datapath):
             if r not in self.frontier:
                 self.frontier_locks[r] = Lock()
                 self.next_frontier.append(r)
-                self.frontier_bw[r] = 0
+                self.frontier_values[r] = self.frontier_default_value
                 self.sibling_rule[r] = list(set(rules)- {r})
                 r.add_flow_and_goto_next_table(actions)
 
         self.round_status[rule] = True
 
         #self.frontier.remove(rule)
-        #self.frontier_bw.pop(rule, None)
+        #self.frontier_values.pop(rule, None)
 
     def reduce_monitoring_level(self, rule):
         orig_rule = self.get_original_rule(rule)
@@ -162,14 +163,14 @@ class MainDatapath(Datapath):
 
         if corase_rule not in self.frontier:
             self.next_frontier.append(corase_rule)
-            self.frontier_bw[corase_rule] = 0
+            self.frontier_values[corase_rule] = self.frontier_default_value
 
         rule.remove_flow()
         sibling.remove_flow()
         assert sibling in self.next_frontier
         self.next_frontier.remove(sibling)
-        self.frontier_bw.pop(rule, None)
-        self.frontier_bw.pop(sibling, None)
+        self.frontier_values.pop(rule, None)
+        self.frontier_values.pop(sibling, None)
         self.frontier_locks.pop(rule)
         self.frontier_locks.pop(sibling)
         return (True, rule, sibling)

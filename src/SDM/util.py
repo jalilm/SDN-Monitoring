@@ -135,6 +135,10 @@ def int_to_ipv4(ip):
     """
     return ".".join(map(lambda n: str(ip >> n & 0xFF), [24, 16, 8, 0]))
 
+def bytes_to_ipv4(ip):
+    int_ip = sum(ord(c) << (i * 8) for i, c in enumerate(ip[::-1]))
+    return int_to_ipv4(int_ip)
+
 
 # noinspection PyPep8Naming
 def CIDR_mask_to_ipv4_subnet_mask(CIDR_mask):

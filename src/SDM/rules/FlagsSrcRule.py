@@ -16,7 +16,7 @@ class FlagsSrcRule(TCPIPSrcRule):
                repr(self.match_args['tcp_flags']) + ")"
 
     def __str__(self):
-        return "FlagsSrcRule ({self.ipv4_string}, {self.subnet_string}) Flags:{self.match_args['tcp_flags']}".format(
+        return "FlagsSrcRule ({self.ipv4_string}, {self.subnet_string}) Flags:{self.match_args[tcp_flags]}".format(
             self=self)
 
     # noinspection PyPep8Naming
