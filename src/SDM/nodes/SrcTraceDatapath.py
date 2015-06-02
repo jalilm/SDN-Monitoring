@@ -37,7 +37,7 @@ class SrcTraceDatapath(TraceDatapath):
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
         self.frontier_locks[rule] = Lock()
-        self.frontier_bw[rule] = 0
+        self.frontier_values[rule] = 0
 
         ipv4_string = '128.0.0.0'
         subnet_string = CIDR_mask_to_ipv4_subnet_mask(1)
@@ -45,7 +45,7 @@ class SrcTraceDatapath(TraceDatapath):
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
         self.frontier_locks[rule] = Lock()
-        self.frontier_bw[rule] = 0
+        self.frontier_values[rule] = 0
         # Till here
 
         for rule in self.next_frontier:

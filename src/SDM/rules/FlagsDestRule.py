@@ -16,7 +16,7 @@ class FlagsDestRule(TCPIPDestRule):
                repr(self.match_args['tcp_flags']) + ")"
 
     def __str__(self):
-        return "FlagsDestRule ({self.ipv4_string}, {self.subnet_string}) Flags:{self.match_args['tcp_flags']}".format(
+        return "FlagsDestRule ({self.ipv4_string}, {self.subnet_string}) Flags:{self.match_args[tcp_flags]}".format(
             self=self)
 
     # noinspection PyPep8Naming
@@ -35,5 +35,4 @@ class FlagsDestRule(TCPIPDestRule):
         for base_rule in base_rules:
             rule = FlagsDestRule.from_TCPIPDestRule(base_rule, self.match_args['tcp_flags'])
             rules.append(rule)
-            rules.append(rule.get_paired_rule())
         return rules

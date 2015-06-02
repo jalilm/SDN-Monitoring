@@ -32,5 +32,4 @@ class TCPIPDestRule(IPDestRule):
         for base_rule in base_rules:
             rule = TCPIPDestRule.from_IPDestRule(base_rule)
             rules.append(rule)
-            rules.append(rule.get_paired_rule())
         return rules
