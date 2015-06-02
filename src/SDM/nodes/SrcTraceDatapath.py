@@ -11,6 +11,7 @@ from ryu.controller import ofp_event
 class SrcTraceDatapath(TraceDatapath):
     def __init__(self, datapath):
         super(SrcTraceDatapath, self).__init__(datapath)
+        self.datapaths = {}
 
     @set_ev_cls(ofp_event.EventOFPPortDescStatsReply, CONFIG_DISPATCHER)
     def multipart_reply_handler(self, ev):

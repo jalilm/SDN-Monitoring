@@ -2,7 +2,7 @@ from mininet.topo import Topo
 
 
 class SynTraceTopo(Topo):
-    def __init__(self, k=1):
+    def __init__(self):
         super(SynTraceTopo, self).__init__()
         switches = [
             self.addSwitch('s1', protocols=["OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13,OpenFlow14,OpenFlow15"])]

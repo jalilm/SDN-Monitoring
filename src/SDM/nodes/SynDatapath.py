@@ -1,8 +1,6 @@
 from multiprocessing import Lock
 
 from src.SDM.nodes.MainDatapath import MainDatapath
-from src.SDM.rules.FlagsDestRule import FlagsDestRule
-from src.SDM.rules.TCPIPDestRule import TCPIPDestRule
 from src.SDM.rules.SynDestRule import SynDestRule
 from src.SDM.util import *
 from src.SDM.rules.InPortRule import InPortRule

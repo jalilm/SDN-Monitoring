@@ -10,7 +10,7 @@ class PushingSwitch(OVSSwitch):
         super(PushingSwitch, self).__init__(name, **params)
 
     def start( self, controllers ):
-        "Start up a new OVS OpenFlow switch using ovs-vsctl"
+        """Start up a new OVS OpenFlow switch using ovs-vsctl"""
         if self.inNamespace:
             raise Exception(
                 'OVS kernel switch does not work in a namespace' )
@@ -26,7 +26,7 @@ class PushingSwitch(OVSSwitch):
                   ( 'tcp', "127.0.0.1", c.port+1 ) )
                    for c in controllers ]
 
-        self.middlewares = [MiddleWare(controllerIP=c.IP(), controllerPort=c.port, protocols=self.protocols) for c in controllers]
+        self.middlewares = [MiddleWare(controller_ip=c.IP(), controller_port=c.port, protocols=self.protocols) for c in controllers]
         [m.start() for m in self.middlewares]
         if self.listenPort:
             clist.append( ( self.name + '-listen',

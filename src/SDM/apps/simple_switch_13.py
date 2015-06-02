@@ -35,7 +35,6 @@ class SimpleSwitch13(app_manager.RyuApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        bands = [parser.OFPMeterBandDscpRemark(0, 0, 0, None, None)]
         req = parser.OFPMeterMod(datapath)
         datapath.send_msg(req)
 
