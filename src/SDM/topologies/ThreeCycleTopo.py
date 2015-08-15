@@ -3,6 +3,7 @@ from mininet.topo import Topo
 
 BASE_MAC = '6a:bc:af:76:'
 
+
 class ThreeCycleTopo(Topo):
     def __init__(self):
         super(ThreeCycleTopo, self).__init__()

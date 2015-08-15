@@ -12,7 +12,7 @@ class FlagsSrcRule(TCPIPSrcRule):
 
     def __repr__(self):
         return "FlagsSrcRule(" + repr(self.datapath) + ", " + repr(self.ipv4_string) + ", " \
-               + ", " + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ", " + \
+               + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ", " + \
                repr(self.match_args['tcp_flags']) + ")"
 
     def __str__(self):
@@ -35,5 +35,4 @@ class FlagsSrcRule(TCPIPSrcRule):
         for base_rule in base_rules:
             rule = FlagsSrcRule.from_TCPIPSrcRule(base_rule, self.match_args['tcp_flags'])
             rules.append(rule)
-            rules.append(rule.get_paired_rule())
         return rules

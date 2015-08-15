@@ -17,8 +17,6 @@ class RyuRemoteController(Controller):
         elif type(ryuArgs) not in ( list, tuple ):
             ryuArgs = [ryuArgs]
 
-        #print('--ofp-listen-host ' + ip + ' --ofp-tcp-listen-port %s' + ' --app-lists '.join(ryuArgs))
-
         super(RyuRemoteController, self).__init__(name=name,
                                                   command='ryu-manager',
                                                   cargs='--ofp-listen-host ' + ip + \

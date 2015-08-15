@@ -2,6 +2,7 @@
 
 from ConfigParser import RawConfigParser
 import logging
+from src.SDM.scripts.CreateSeveralHH import create
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,6 @@ def get_dirs(fresh=False):
         logger.debug("get_dirs returned with result: %s", get_dirs.dirs)
         return get_dirs.dirs
 
-    # TODO: See how to fix this?!
     home_path = '/home/sdm/SDN-Monitoring/'
 
     get_dirs.dirs = {
@@ -58,10 +58,70 @@ def get_params(directories, fresh=False):
     params['RunParameters']['maxBw'] = local_bandwidth * number_of_stations
     params['RunParameters']['timeStep'] = config.getfloat('RunParameters',
                                                           'timeStep')
-    params['RunParameters']['state'] = config.get('RunParameters',
-                                                  'state')
-    params['RunParameters']['ryuApps'] = config.get('RunParameters',
-                                                    'ryuApps')
+    state = config.get('RunParameters', 'state')
+    params['RunParameters']['state'] = state
+    rate_type = config.get('RunParameters', 'rate_type')
+    params['RunParameters']['rate_type'] = rate_type
+    direction = config.get('RunParameters', 'direction')
+    params['RunParameters']['direction'] = direction
+    params['RunParameters']['interact'] = config.getboolean('RunParameters', 'interact')
+    params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
+    params['RunParameters']['mechanism'] = config.get('RunParameters',
+                                                     'mechanism')
+
+    if state == "Pulling":
+        params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
+        params['RunParameters']['numberOfStations'] = 2
+        if rate_type == "BW":
+            params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/bw-attack"
+            if direction == "Destination":
+                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/BWPullingController.py"
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.BWPullingDatapath.BWPullingDatapath"
+            if direction == "Source":
+                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SrcBWPullingController.py"
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPullingDatapath.SrcBWPullingDatapath"
+        if rate_type == "Syn":
+            params['RunParameters']['topoType'] = "src.SDM.topologies.SynTraceTopo.SynTraceTopo"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/syn-attack"
+            if direction == "Destination":
+                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SynPullingController.py"
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SynPullingDatapath.SynPullingDatapath"
+            if direction == "Source":
+                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SrcSynPullingController.py"
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcSynPullingDatapath.SrcSynPullingDatapath"
+
+    if state == "Pushing":
+        params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
+        params['RunParameters']['numberOfStations'] = 2
+        params['RunParameters']['mininet_switch'] = "src.SDM.nodes.PushingSwitch.PushingSwitch"
+        if rate_type == "BW":
+            params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/PushingController.py"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/bw-attack"
+            if direction == "Destination":
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.BWPushingDatapath.BWPushingDatapath"
+                params['RunParameters']['middleware'] = "src.SDM.nodes.BWMiddleWare.BWMiddleWare"
+            if direction == "Source":
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPushingDatapath.SrcBWPushingDatapath"
+                params['RunParameters']['middleware'] = "src.SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
+        if rate_type == "Syn":
+            params['RunParameters']['topoType'] = "src.SDM.topologies.SynTraceTopo.SynTraceTopo"
+            params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/Pushing15Controller.py"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/syn-attack"
+            if direction == "Destination":
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SynPushingDatapath.SynPushingDatapath"
+                params['RunParameters']['middleware'] = "src.SDM.nodes.SynMiddleWare.SynMiddleWare"
+            if direction == "Source":
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcSynPushingDatapath.SrcSynPushingDatapath"
+                params['RunParameters']['middleware'] = "src.SDM.nodes.SrcSynMiddleWare.SrcSynMiddleWare"
+        if rate_type == "HH-several":
+            create(params['RunParameters']['numHH'])
+            params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/PushingController.py"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/several-attack"
+            params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPushingDatapath.SrcBWPushingDatapath"
+            params['RunParameters']['middleware'] = "src.SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
 
     params['General']['fileToSendPath'] = directories['home'] + \
                                           config.get('General', 'fileToSendPath')
@@ -72,7 +132,7 @@ def get_params(directories, fresh=False):
     params['General']['finishGenerationToken'] = config.get('General',
                                                             'finishGenerationToken')
     params['General']['alertToken'] = config.get('General',
-                                                            'alertToken')
+                                                 'alertToken')
     params['General']['recvSize'] = config.getint('General', 'recvSize')
     params['General']['ipBase'] = config.get('General', 'ipBase')
     params['General']['xterms'] = config.getboolean('General', 'xterms')
@@ -134,6 +194,7 @@ def int_to_ipv4(ip):
     Credit: https://gist.github.com/cslarsen/1595135
     """
     return ".".join(map(lambda n: str(ip >> n & 0xFF), [24, 16, 8, 0]))
+
 
 def bytes_to_ipv4(ip):
     int_ip = sum(ord(c) << (i * 8) for i, c in enumerate(ip[::-1]))

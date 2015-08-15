@@ -19,10 +19,12 @@ class ServerThread(MyThread):
     """
     A server thread class.
     """
+
     def __init__(self, server_id, name, sockets_queue, logs_dir_path):
         super(ServerThread, self).__init__(server_id, name, "server",
-                                                       logs_dir_path)
+                                           logs_dir_path)
         self.sockets_queue = sockets_queue
+
     def run(self):
         dirs = get_dirs()
         params = get_params(dirs)
@@ -35,6 +37,7 @@ class ServerThread(MyThread):
             client.close()
             self.log('Closed connection with ' + str(address))
             self.sockets_queue.task_done()
+
 
 def main(argv):
     """
@@ -53,13 +56,13 @@ def main(argv):
         mem_map = mmap.mmap(_file.fileno(), 0)
 
     with open(server_log_file, 'a') as _file:
-        _file.write(str(time.time())+' Spawning ' + str(number_of_threads) +
+        _file.write(str(time.time()) + ' Spawning ' + str(number_of_threads) +
                     ' threads\n')
 
     sockets_queue = Queue.Queue()
     workers = [ServerThread(who_am_i, 'Thread_' + str(i), sockets_queue,
                             log_dir)
-               for i in range(1, number_of_threads+1)]
+               for i in range(1, number_of_threads + 1)]
     random.shuffle(workers)
 
     _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -88,6 +91,7 @@ def main(argv):
     with open(server_log_file, 'a') as _file:
         _file.write(str(time.time()) + ' Exiting...\n')
     mem_map.close()
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

@@ -1,3 +1,5 @@
+from src.SDM.util import get_dirs, get_params
+
 class Rule(object):
     """
     A class that represents a rule in the switch table.
@@ -10,6 +12,7 @@ class Rule(object):
         self.father_rule = father_rule
         self.match_args = {}
         self.match = self.datapath.ofproto_parser.OFPMatch(**self.match_args)
+        self.params = get_params(get_dirs())
 
     def __repr__(self):
         return "Rule(" + repr(self.datapath) + ", " + repr(self.table_id) + \
@@ -17,9 +20,6 @@ class Rule(object):
 
     def __str__(self):
         return "Rule"
-        # datapath:{} table_id:{} priority:{} father_rule:{} match:{}" \
-        #    .format(self.datapath, self.table_id, self.priority, self.father_rule,
-        #            ','.join(['%s=%s' % (k, v) for k, v in self.match_args.iteritems()]))
 
     def __hash__(self):
         return self.__repr__().__hash__()
@@ -61,7 +61,7 @@ class Rule(object):
 
     def remove_flow(self):
         mod = self.datapath.ofproto_parser.OFPFlowMod(
-            datapath=self.datapath, command=self.datapath.ofproto.OFPFC_DELETE_STRICT, table_id=self.table_id,
+            datapath=self.datapath, command=self.datapath.ofproto.OFPFC_DELETE, table_id=self.table_id,
             priority=self.priority, match=self.get_match())
         self.datapath.send_msg(mod)
 

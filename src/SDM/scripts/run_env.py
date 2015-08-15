@@ -7,6 +7,7 @@ import logging
 from src.SDM.util import get_dirs, get_params, get_class
 from mininet.log import setLogLevel
 
+
 def main():
     """
     The main code of the program, which calls the test.
@@ -16,7 +17,7 @@ def main():
 
     "Level should be one of the following:"
     "debug, info, output, warning, error, critical"
-    #setLogLevel('debug')
+    # setLogLevel('debug')
     setLogLevel(logging.getLevelName(logger.getEffectiveLevel()).lower())
 
     directories = get_dirs()
@@ -29,13 +30,13 @@ def main():
     with open(params['General']['sharedMemFilePath'], "r+b") as _file:
         mem_map = mmap.mmap(_file.fileno(), 0)
 
-    test_class = get_class(params['RunParameters']['state'])
+    test_class = get_class(params['RunParameters']['test'])
     test = test_class(mem_map, directories, params)
-    logger.info("Preparing before test %s", params['RunParameters']['state'])
+    logger.info("Preparing before test %s", params['RunParameters']['test'])
     test.prepare_before_run()
-    logger.info("Running test %s", params['RunParameters']['state'])
+    logger.info("Running test %s", params['RunParameters']['test'])
     test.run()
-    logger.info("Cleaning after test %s", params['RunParameters']['state'])
+    logger.info("Cleaning after test %s", params['RunParameters']['test'])
     test.clean_after_run()
     logger.debug("Cleaning shared memory file")
     os.remove(params['General']['sharedMemFilePath'])

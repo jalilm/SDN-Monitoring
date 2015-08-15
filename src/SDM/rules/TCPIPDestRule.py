@@ -18,7 +18,7 @@ class TCPIPDestRule(IPDestRule):
 
     def __repr__(self):
         return "TCPIPDestRule(" + repr(self.datapath) + ", " + repr(self.ipv4_string) + ", " \
-               + ", " + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ")"
+               + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ")"
 
     def __str__(self):
         return "TCPIPDestRule ({self.ipv4_string}, {self.subnet_string})".format(self=self)

@@ -2,13 +2,65 @@
 
 shopt -s expand_aliases
 source ~/.bash_aliases
-for i in ./config/parameters*.cfg; do
-	cp $i ./config/parameters.cfg
-	base=`basename "${i}" | cut -d"." -f1`
-	~/wireshark/tshark -i lo -w "./logs/${base}.pcap" &
-	pid=$!
-	PYTHONPATH=$PYTHONPATH ./src/SDM/scripts/run_env.py
-	kill -9 $pid
-	notify $i
-done
 
+timestamp() {
+	date +"%T"
+}
+
+notify=1
+state="Pushing" #Pulling Pushing"
+time_step="0.25" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
+rate="HH-several" #HH-several Syn BW"
+direction="Source" #Source Destination"
+numHH="5"
+mechanism="prio" #table"
+
+for m in $mechanism; do
+for s in $state; do
+for r in $rate; do
+for d in $direction; do
+	time_stamp=`timestamp`
+	folder_name="logs/${s}-${r}-${d}-"${time_stamp}
+	mkdir -p ${folder_name}
+	if [[ -d "logs/${s}-${r}-${d}/" ]]; then
+		rm "logs/${s}-${r}-${d}"
+	fi
+	ln -s "../"${folder_name} "logs/${s}-${r}-${d}"
+	for h in $numHH; do
+	for ts in $time_step; do
+		log_file="${folder_name}/${ts}-${h}.log"
+		pcap_file="${folder_name}/${ts}-${h}.pcap"
+		python ./src/SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m}
+		~/wireshark/tshark -i lo -w "${pcap_file}" &
+		pid=$!
+		sleep 10s
+		PYTHONPATH=$PYTHONPATH ./src/SDM/scripts/run_env.py
+	        kill -9 $pid
+        	sleep 10s
+		a=`grep "Alert!" ${log_file} | cut -d"(" -f2 | cut -d"," -f1 | uniq | wc -l`
+		if [[ $a != $h ]]; then
+			if [[ $notify != 0 ]]; then
+				notify Failed${ts}-${h}
+			fi
+			sleep 2m
+			mn -c
+			continue
+		fi
+		counters=`grep Maximal ${log_file} | rev | cut -d":" -f1 | rev`
+		attack_start=`sed -n -e '/Attack started/,/Time step #/ p' ${log_file} | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
+	        alert_step=`tac ${log_file} | sed -n -e '/Alert/,/Time step #/ p' | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
+	        let steps=${alert_step}-${attack_start}
+	        time=`echo ${steps}*${ts} | bc`
+	        ofp_packets=`sudo tshark -2 -r ${pcap_file} -R "(openflow||openflow_v1||openflow_v4||openflow_v5) && ((tcp.srcport==6633) || (tcp.dstport==6633))" | wc -l`
+	        echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${counters} >> "logs/${s}-${r}-${d}.res"
+		if [[ $notify != 0 ]]; then
+		        notify Success${ts}-${h}
+		fi
+	        sleep 2m
+		mn -c
+	done
+	done
+done
+done
+done
+done

@@ -12,7 +12,7 @@ class FlagsDestRule(TCPIPDestRule):
 
     def __repr__(self):
         return "FlagsDestRule(" + repr(self.datapath) + ", " + repr(self.ipv4_string) + ", " \
-               + ", " + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ", " + \
+               + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ", " + \
                repr(self.match_args['tcp_flags']) + ")"
 
     def __str__(self):

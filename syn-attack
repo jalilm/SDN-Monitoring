@@ -1,0 +1,6 @@
+#!/bin/bash
+
+./inner-syn &
+pid=$!
+sleep 12m
+kill -9 $pid

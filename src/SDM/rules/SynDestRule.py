@@ -2,6 +2,7 @@ from src.SDM.rules.Rule import Rule
 from src.SDM.rules.TCPIPDestRule import TCPIPDestRule
 from src.SDM.rules.FlagsDestRule import FlagsDestRule
 
+
 class SynDestRule(Rule):
     """
     A class that represents a rule in the switch table.
@@ -12,13 +13,14 @@ class SynDestRule(Rule):
         self.ipv4_string = ipv4_string
         self.subnet_string = subnet_string
         self.tcp_rule = TCPIPDestRule(datapath, ipv4_string, subnet_string, table_id, priority, None)
-        self.syn_rule = FlagsDestRule(datapath, ipv4_string, subnet_string, table_id, priority+1, 0x02, None)
+        self.syn_rule = FlagsDestRule(datapath, ipv4_string, subnet_string, table_id, priority + 1, 0x02, None)
         self.match_args = self.tcp_rule.match_args
         self.match = self.tcp_rule.match
 
     def __repr__(self):
         return "SynDestRule(" + repr(self.datapath) + ", " + repr(self.tcp_rule.ipv4_string) + ", " \
-               + ", " + repr(self.tcp_rule.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ", " + \
+               + repr(self.tcp_rule.subnet_string) + ", " + repr(self.table_id) + ", " + repr(
+            self.priority) + ", " + \
                repr(self.syn_rule.match_args['tcp_flags']) + ")"
 
     def __str__(self):
@@ -30,7 +32,8 @@ class SynDestRule(Rule):
         tcp_finer_rules = self.tcp_rule.get_finer_rules()
         syn_finer_rules = self.syn_rule.get_finer_rules()
         for t_rule in tcp_finer_rules:
-            s_rule = [s_rule for s_rule in syn_finer_rules if s_rule.ipv4_string ==  t_rule.ipv4_string and s_rule.subnet_string == t_rule.subnet_string][0]
+            s_rule = [s_rule for s_rule in syn_finer_rules if
+                      s_rule.ipv4_string == t_rule.ipv4_string and s_rule.subnet_string == t_rule.subnet_string][0]
             rule = SynDestRule.from_sub_rules(t_rule, s_rule, self)
             rules.append(rule)
         return rules

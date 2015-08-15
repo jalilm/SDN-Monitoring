@@ -1,0 +1,26 @@
+#!/bin/bash
+
+caida_rate=4
+syn_rate=1
+i=1
+let attack_size=100000
+
+while [ "${i}" -lt "${attack_size}" ]
+do
+	first=${i}
+	let last=${i}+${caida_rate}-1
+	~/wireshark/editcap -r ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap ./tmp.pcap "${first}"-"${last}"
+	mergecap -a -w tmp_combined.pcap ~/SDN-Monitoring/tmp/sync.pcap ./tmp.pcap
+	rm ./tmp.pcap
+	if [ ! -f ./attack.pcap ]; then
+		mv ./tmp_combined.pcap ./attack.pcap
+	else
+		mv ./attack.pcap ./t-attack.pcap
+		mergecap -a -w ./attack.pcap ./t-attack.pcap ./tmp_combined.pcap
+		rm ./tmp_combined.pcap
+		rm ./t-attack.pcap
+	fi
+	let i=${last}+1
+done
+~/wireshark/editcap -S 0.000001 ./attack.pcap ./new_attack.pcap
+mv ./new_attack.pcap ./attack.pcap

@@ -4,7 +4,6 @@ from subprocess import Popen
 import logging
 
 from src.SDM.tests import BaseTest
-
 from src.SDM.util import irange
 
 
@@ -33,19 +32,12 @@ class NormalTest(BaseTest):
         Executes the test and Mininet and the On-Off traffic model of the hosts
         """
         self.logger.info("run")
-        # self.net.build()
         self.logger.debug("starting the net")
         self.net.start()
 
-        # TODO: delay used to allow completion of the handshake,
-        # check if we can get rid of it.
+        # delay used to allow completion of the handshake,
         self.logger.debug("sleeping for 10 sec")
         time.sleep(10)
-
-        # self.net.interact()
-        # self.net.get('h1').cmd(self.directories['src'] + 'MultiThreadServer.py 1 &')
-        # self.net.get('h2').cmd(self.directories['src'] + 'MultiThreadClient.py 2 2')
-        # return
 
         self.logger.debug("running MultiThreadServer on the hosts")
         for i in irange(1, self.params['RunParameters']['numberOfStations']):
@@ -65,7 +57,6 @@ class NormalTest(BaseTest):
             hosti = self.net.get('h' + str(i))
             hosti.waitOutput()
 
-        # TODO: fix that the finish token should be same length as start token
         self.shared_mem_fd[0:] = self.params['General']['finishGenerationToken']
         self.logger.debug("stopping the net")
         self.net.stop()

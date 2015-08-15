@@ -24,15 +24,15 @@ class IPSrcRule(IPRule):
 
     def __repr__(self):
         return "IPSrcRule(" + repr(self.datapath) + ", " + repr(self.ipv4_string) + ", " \
-               + ", " + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ")"
+               + repr(self.subnet_string) + ", " + repr(self.table_id) + ", " + repr(self.priority) + ")"
 
     def __str__(self):
         return "IPSrcRule ({self.ipv4_string}, {self.subnet_string})".format(self=self)
 
     def get_paired_rule(self):
         return IPSrcRule(self.datapath, get_paired_ipv4(self.ipv4_string, self.subnet_string),
-                          self.subnet_string,
-                          self.table_id, self.priority, self.father_rule)
+                         self.subnet_string,
+                         self.table_id, self.priority, self.father_rule)
 
     def get_finer_rules(self):
         rules = []
@@ -40,8 +40,15 @@ class IPSrcRule(IPRule):
         tmp = "1".zfill(ls1 + 1)[::-1]
         xor_mask = int("0b" + tmp.zfill(32)[::-1], 2)
         new_subnet_mask = int_to_ipv4(self.subnet_int ^ xor_mask)
-        rule = IPSrcRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id + 1, self.priority,
+        # TODO: table <-> prio change required.
+        if self.params['RunParameters']['mechanism'] == "table":
+            rule = IPSrcRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id+1, self.priority,
                           self)
+        elif self.params['RunParameters']['mechanism'] == "prio":
+            rule = IPSrcRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id, self.priority + 2,
+                          self)
+        else:
+            assert False
         rules.append(rule)
         rules.append(rule.get_paired_rule())
         return rules

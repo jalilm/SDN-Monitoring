@@ -3,6 +3,7 @@ import random
 from src.SDM.util import irange
 from mininet.topo import Topo
 
+
 class CircleTopo(Topo):
     """
     A circle Topology.
