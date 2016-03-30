@@ -87,10 +87,14 @@ class BaseTest(object):
         dirs = get_dirs()
         params = get_params(dirs)
         sdm_log_file = dirs['log'] + '/SDM.log'
-        output_log_file = dirs['log'] + '/' + params['RunParameters']['state'] + '-' + params['RunParameters'][
-            'rate_type'] + '-' + params['RunParameters']['direction'] + '/' + str(
-            params['RunParameters']['timeStep']) + '-' + str(
-            params['RunParameters']['numHH']) +'.log'
+        output_log_file = dirs['log'] + '/' + params['RunParameters']['mechanism'] + '-' + \
+                          params['RunParameters']['state'] + '-' + \
+                          params['RunParameters']['rate_type'] + '-' + \
+                          params['RunParameters']['direction'] + '/' + \
+                          str(params['RunParameters']['timeStep']) + '-' + \
+                          str(params['RunParameters']['numHH']) + '-' + \
+                          str(params['RunParameters']['common_mask']) + \
+                          '.log'
 
         os.system("cat /tmp/c0.log " + sdm_log_file + " | sort -n -s > " + output_log_file)
         os.system("rm /tmp/c0.log")

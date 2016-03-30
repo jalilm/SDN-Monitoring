@@ -6,6 +6,20 @@ from src.SDM.scripts.CreateSeveralHH import create
 
 logger = logging.getLogger(__name__)
 
+def ipv4_to_int(s):
+    """
+    Convert dotted IPv4 address to integer.
+    Credit: https://gist.github.com/cslarsen/1595135
+    """
+    return reduce(lambda a, b: a << 8 | b, map(int, s.split(".")))
+
+
+def int_to_ipv4(ip):
+    """
+    Convert 32-bit integer to dotted IPv4 address.
+    Credit: https://gist.github.com/cslarsen/1595135
+    """
+    return ".".join(map(lambda n: str(ip >> n & 0xFF), [24, 16, 8, 0]))
 
 def get_dirs(fresh=False):
     """
@@ -65,16 +79,19 @@ def get_params(directories, fresh=False):
     direction = config.get('RunParameters', 'direction')
     params['RunParameters']['direction'] = direction
     params['RunParameters']['interact'] = config.getboolean('RunParameters', 'interact')
-    params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
+    params['RunParameters']['numHH'] = 1
     params['RunParameters']['mechanism'] = config.get('RunParameters',
                                                      'mechanism')
+    params['RunParameters']['common_mask'] = config.getint('RunParameters', 'common_mask')
+    params['RunParameters']['before_attack'] = "~/SDN-Monitoring/util/before_trace"
+    params['RunParameters']['after_attack'] = "~/SDN-Monitoring/util/after_trace"
 
     if state == "Pulling":
         params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
         params['RunParameters']['numberOfStations'] = 2
         if rate_type == "BW":
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/bw-attack"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/bw-attack"
             if direction == "Destination":
                 params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/BWPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.BWPullingDatapath.BWPullingDatapath"
@@ -83,13 +100,15 @@ def get_params(directories, fresh=False):
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPullingDatapath.SrcBWPullingDatapath"
         if rate_type == "Syn":
             params['RunParameters']['topoType'] = "src.SDM.topologies.SynTraceTopo.SynTraceTopo"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/syn-attack"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/syn-attack"
             if direction == "Destination":
                 params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SynPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SynPullingDatapath.SynPullingDatapath"
             if direction == "Source":
                 params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SrcSynPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcSynPullingDatapath.SrcSynPullingDatapath"
+        if rate_type == "HH-several":
+            assert False
 
     if state == "Pushing":
         params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
@@ -98,7 +117,7 @@ def get_params(directories, fresh=False):
         if rate_type == "BW":
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
             params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/PushingController.py"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/bw-attack"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/bw-attack"
             if direction == "Destination":
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.BWPushingDatapath.BWPushingDatapath"
                 params['RunParameters']['middleware'] = "src.SDM.nodes.BWMiddleWare.BWMiddleWare"
@@ -108,7 +127,7 @@ def get_params(directories, fresh=False):
         if rate_type == "Syn":
             params['RunParameters']['topoType'] = "src.SDM.topologies.SynTraceTopo.SynTraceTopo"
             params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/Pushing15Controller.py"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/syn-attack"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/syn-attack"
             if direction == "Destination":
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SynPushingDatapath.SynPushingDatapath"
                 params['RunParameters']['middleware'] = "src.SDM.nodes.SynMiddleWare.SynMiddleWare"
@@ -116,10 +135,15 @@ def get_params(directories, fresh=False):
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcSynPushingDatapath.SrcSynPushingDatapath"
                 params['RunParameters']['middleware'] = "src.SDM.nodes.SrcSynMiddleWare.SrcSynMiddleWare"
         if rate_type == "HH-several":
-            create(params['RunParameters']['numHH'])
+            if direction == "Destination":
+                assert False
+            f1 = ipv4_to_int
+            f2 = int_to_ipv4
+            params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
+            create(params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
             params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/PushingController.py"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/several-attack"
+            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/several-attack"
             params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPushingDatapath.SrcBWPushingDatapath"
             params['RunParameters']['middleware'] = "src.SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
 
@@ -178,23 +202,6 @@ def irange(start, end):
     Credit: Mininet's util library.
     """
     return range(start, end + 1)
-
-
-def ipv4_to_int(s):
-    """
-    Convert dotted IPv4 address to integer.
-    Credit: https://gist.github.com/cslarsen/1595135
-    """
-    return reduce(lambda a, b: a << 8 | b, map(int, s.split(".")))
-
-
-def int_to_ipv4(ip):
-    """
-    Convert 32-bit integer to dotted IPv4 address.
-    Credit: https://gist.github.com/cslarsen/1595135
-    """
-    return ".".join(map(lambda n: str(ip >> n & 0xFF), [24, 16, 8, 0]))
-
 
 def bytes_to_ipv4(ip):
     int_ip = sum(ord(c) << (i * 8) for i, c in enumerate(ip[::-1]))

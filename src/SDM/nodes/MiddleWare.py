@@ -192,6 +192,7 @@ class MiddleWare(Strategy):
             self.condition.notify_all()
 
     def start(self):
+        sleep(5)
         self.monitor_thread.daemon = True
         self.fromSwitchProxy.daemon = True
         self.connected = True

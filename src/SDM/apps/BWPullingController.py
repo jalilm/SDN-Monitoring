@@ -66,4 +66,4 @@ class BWPullingController(PullingController):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def get_rule_threshold(self, rule):
-        return 1500000
+        return 1500000/(self.parameters['RunParameters']['numHH']/1.0)

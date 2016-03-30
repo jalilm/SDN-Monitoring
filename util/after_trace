@@ -1,0 +1,2 @@
+#!/bin/bash
+#tcpreplay -M 15 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130200.UTC.anon.pcap

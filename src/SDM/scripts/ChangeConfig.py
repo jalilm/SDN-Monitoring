@@ -13,6 +13,7 @@ def main(argv):
     sc.set('RunParameters', 'direction', sys.argv[4])
     sc.set('RunParameters', 'numHH', sys.argv[5])
     sc.set('RunParameters', 'mechanism', sys.argv[6])
+    sc.set('RunParameters', 'common_mask', sys.argv[7])
     with open('/home/sdm/SDN-Monitoring/config/parameters.cfg', 'wb') as configFile:
         sc.write(configFile)
 

@@ -39,15 +39,15 @@ class TraceTest(BaseTest):
         self.net.start()
 
         # delay used to allow completion of the handshake
-        self.logger.debug("sleeping 10 sec to allow completion of the handshake")
-        sleep(10)
+        self.logger.debug("sleeping 30 sec to allow completion of the handshake")
+        sleep(30)
         self.detect_alert()
         host1 = self.net.get('h1')
-        host1.cmd('~/SDN-Monitoring/trace_before')
+        host1.cmd(self.params['RunParameters']['before_attack'])
         self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack started traces from h1")
         host1.cmd(self.params['RunParameters']['attack'])
         self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack finished from h1")
-        #host1.cmd('~/SDN-Monitoring/trace_after')
+        host1.cmd(self.params['RunParameters']['after_attack'])
         self.logger.debug("Stopping the net")
         if str(self.shared_mem_fd[:6]) != self.params['General']['alertToken']:
             self.shared_mem_fd[:6] = self.params['General']['finishGenerationToken']

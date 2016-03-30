@@ -9,28 +9,30 @@ timestamp() {
 
 notify=1
 state="Pushing" #Pulling Pushing"
-time_step="0.25" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
+time_step="0.1" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
 rate="HH-several" #HH-several Syn BW"
 direction="Source" #Source Destination"
-numHH="5"
-mechanism="prio" #table"
+numHH="1" # 5 6"
+mechanism="table" #prio:"
+common_mask="24" #0 8 16 24 30"
 
 for m in $mechanism; do
 for s in $state; do
 for r in $rate; do
 for d in $direction; do
 	time_stamp=`timestamp`
-	folder_name="logs/${s}-${r}-${d}-"${time_stamp}
+	folder_name="logs/${m}-${s}-${r}-${d}-"${time_stamp}
 	mkdir -p ${folder_name}
-	if [[ -d "logs/${s}-${r}-${d}/" ]]; then
-		rm "logs/${s}-${r}-${d}"
+	if [[ -d "logs/${m}-${s}-${r}-${d}/" ]]; then
+		rm "logs/${m}-${s}-${r}-${d}"
 	fi
-	ln -s "../"${folder_name} "logs/${s}-${r}-${d}"
+	ln -s "../"${folder_name} "logs/${m}-${s}-${r}-${d}"
 	for h in $numHH; do
 	for ts in $time_step; do
-		log_file="${folder_name}/${ts}-${h}.log"
-		pcap_file="${folder_name}/${ts}-${h}.pcap"
-		python ./src/SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m}
+	for c in $common_mask; do
+		log_file="${folder_name}/${ts}-${h}-${c}.log"
+		pcap_file="${folder_name}/${ts}-${h}-${c}.pcap"
+		python ./src/SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m} ${c}
 		~/wireshark/tshark -i lo -w "${pcap_file}" &
 		pid=$!
 		sleep 10s
@@ -40,7 +42,7 @@ for d in $direction; do
 		a=`grep "Alert!" ${log_file} | cut -d"(" -f2 | cut -d"," -f1 | uniq | wc -l`
 		if [[ $a != $h ]]; then
 			if [[ $notify != 0 ]]; then
-				notify Failed${ts}-${h}
+				notify Failed-${ts}-${h}-${c}
 			fi
 			sleep 2m
 			mn -c
@@ -52,12 +54,22 @@ for d in $direction; do
 	        let steps=${alert_step}-${attack_start}
 	        time=`echo ${steps}*${ts} | bc`
 	        ofp_packets=`sudo tshark -2 -r ${pcap_file} -R "(openflow||openflow_v1||openflow_v4||openflow_v5) && ((tcp.srcport==6633) || (tcp.dstport==6633))" | wc -l`
-	        echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${counters} >> "logs/${s}-${r}-${d}.res"
+	        echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${c},${counters} >> "logs/${m}-${s}-${r}-${d}.res"
+		all_counters=`grep "counters" ${log_file} | cut -d":" -f3`
+		arr_counters=($all_counters)
+		all_steps=`grep "step" ${log_file} | cut -d"#" -f2 | cut -d" " -f1`
+		arr_steps=($all_steps)
+		total=${#arr_steps[*]}
+		for (( i=${attack_start}-1; i<=$(( $total -1 )); i++ ))
+		do
+		    echo "${arr_steps[$i]}, ${arr_counters[i]}" >> "${folder_name}/${ts}-${h}-${c}.counters"
+		done
 		if [[ $notify != 0 ]]; then
-		        notify Success${ts}-${h}
+		        notify Success-${ts}-${h}-${c}
 		fi
 	        sleep 2m
 		mn -c
+	done
 	done
 	done
 done

@@ -1,0 +1,5 @@
+#!/bin/bash
+tcpreplay -t -K -l 0 -i h1-eth0 ~/SDN-Monitoring/tmp/several.pcap &
+pid_syn=$!
+sleep 12m
+kill -9 $pid_syn
