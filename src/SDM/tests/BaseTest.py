@@ -80,6 +80,7 @@ class BaseTest(object):
             sleep(time_step)
         if str(self.shared_mem_fd[:6]) == alert_token:
             self.net.get('h1').stopWaiting()
+            self.net.get('h2').stopWaiting()
             self.net.stop()
 
     def clean_after_run(self):

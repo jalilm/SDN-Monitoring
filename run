@@ -9,10 +9,10 @@ timestamp() {
 
 notify=1
 state="Pushing" #Pulling Pushing"
-time_step="0.1" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
+time_step="0.25" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
 rate="HH-several" #HH-several Syn BW"
 direction="Source" #Source Destination"
-numHH="1" # 5 6"
+numHH="7 8 9 10 11 12" # 5 6"
 mechanism="table" #prio:"
 common_mask="24" #0 8 16 24 30"
 
