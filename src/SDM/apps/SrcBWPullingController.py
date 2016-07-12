@@ -26,10 +26,10 @@ class SrcBWPullingController(PullingController):
                     ipv4_string = ipv4_src[0]
                     subnet_string = ipv4_src[1]
 
-                rule = IPSrcRule(ev.msg.datapath, ipv4_string, subnet_string, stat.table_id, 0, None)
+                rule = IPSrcRule(ev.msg.datapath, ipv4_string, subnet_string, stat.table_id, stat.priority, None)
 
                 self.info('datapath         '
-                          'ipv4-dst                           '
+                          'ipv4-src                           '
                           'current bandwidth  duration           bytes')
                 self.info('---------------- '
                           '---------------------------------- '
