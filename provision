@@ -1,0 +1,65 @@
+sudo apt-get update
+sudo apt-get -q -y install git
+sudo apt-get -q -y install autoconf
+sudo apt-get -q -y install libtool
+sudo apt-get -q -y install libgtk2.0-dev
+sudo apt-get -q -y install wireshark
+sudo apt-get -q -y install tshark
+sudo apt-get -q -y install tcpreplay
+
+#git clone git://github.com/jalilm/SDN-Monitoring.git
+
+#install ovs from sources
+wget http://openvswitch.org/releases/openvswitch-2.5.0.tar.gz
+tar xvf openvswitch-2.5.0.tar.gz
+rm openvswitch-2.5.0.tar.gz
+cd ~/openvswitch-2.5.0/
+./boot.sh
+./configure --with-linux=/lib/modules/`uname -r`/build
+patch < /vagrant/acinclude.patch
+make
+sudo make install
+sudo cp /lib/modules/3.13.0-91-generic/kernel/net/openvswitch/openvswitch.ko .
+sudo rm /lib/modules/3.13.0-91-generic/kernel/net/openvswitch/openvswitch.ko
+sudo make modules_install
+sudo ovs-appctl -t ovs-vswitchd exit
+sudo ovs-appctl -t ovsdb-server exit
+sudo rmmod openvswitch
+sudo modprobe openvswitch
+sudo modprobe -D openvswitch
+sudo kill -9 `cd /usr/local/var/run/openvswitch && cat ovsdb-server.pid ovs-vswitchd.pid`
+sudo mkdir -p /usr/local/etc/openvswitch % ovsdb-tool create /usr/local/etc/openvswitch/conf.db vswitchd/vswitch.ovsschema
+cd ..
+sudo rm -rf ./openvswitch-2.5.0/
+sudo ovsdb-server --remote=punix:/usr/local/var/run/openvswitch/db.sock \
+                     --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
+                     --private-key=db:Open_vSwitch,SSL,private_key \
+                     --certificate=db:Open_vSwitch,SSL,certificate \
+                     --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert \
+                     --pidfile --detach
+sudo ovs-vsctl --no-wait init
+sudo ovs-vswitchd --pidfile --detach
+
+#sudo apt-get -q -y install mininet
+#install mininet from sources
+git clone git://github.com/mininet/mininet.git
+cd ./mininet
+sudo ./util/install.sh -nw
+cd ..
+sudo rm -rf ./mininet/
+sudo rm -rf ./loxigen/
+
+#sudo apt-get -q -y install python-pip
+#sudo apt-get -q -y install python-dev
+#sudo apt-get -q -y install python-eventlet
+#sudo apt-get -q -y install python-routes
+#sudo apt-get -q -y install python-webob
+#sudo apt-get -q -y install python-paramiko
+#sudo pip install six --upgrade
+#sudo pip install ryu
+# install Ryu from sources
+git clone git://github.com/osrg/ryu.git
+cd ryu
+sudo python ./setup.py install
+cd ..
+sudo rm -rf ./ryu/
