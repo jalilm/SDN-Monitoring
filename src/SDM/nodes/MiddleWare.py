@@ -213,7 +213,7 @@ class MiddleWare(Strategy):
 
     def add_monitoring_rule(self, rule):
         super(MiddleWare, self).add_monitoring_rule(rule)
-        self.round_status[rule] = 0
+        self.round_status[rule] = None
         self.counters += 1
 
     def request_stats(self):

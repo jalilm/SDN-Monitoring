@@ -1,4 +1,4 @@
-from multiprocessing import Lock
+from multiprocessing import RLock
 
 from src.SDM.util import *
 
@@ -19,8 +19,9 @@ class Strategy(object):
 
     def received_all_replys(self):
         for rule in self.frontier:
-            if not self.round_status.has_key(rule):
-                return False
+            with self.frontier_locks[rule]:
+                if self.round_status[rule] is None:
+                    return False
         return True
 
     def increase_monitoring_level(self, rule):
@@ -29,10 +30,14 @@ class Strategy(object):
             return False  # Alert
         if rule not in self.frontier:
             self.logger.error("rule is not in subrules - 1")
+            self.logger.error("rule is %s", rule)
+            self.logger.error("frontier is %s", self.frontier)
             assert False
         with self.frontier_locks[rule]:
             if rule not in self.frontier:
                 self.logger.error("rule is not in subrules - 2")
+                self.logger.error("rule is %s", rule)
+                self.logger.error("frontier is %s", self.frontier)
                 assert False
             orig_rule = self.get_original_rule(rule)
             self.set_refined_monitoring_rules(orig_rule)
@@ -44,7 +49,7 @@ class Strategy(object):
 
         for r in rules:
             if r not in self.frontier:
-                self.frontier_locks[r] = Lock()
+                self.frontier_locks[r] = RLock()
                 self.next_frontier.append(r)
                 self.frontier_values[r] = self.frontier_default_value
                 self.sibling_rule[r] = list(set(rules) - {r})
@@ -114,10 +119,10 @@ class Strategy(object):
         actions = []
         for rule in self.next_frontier:
             rule.add_flow_and_goto_next_table(actions)
-            self.round_status[rule] = 0
+            self.round_status[rule] = None
 
     def add_monitoring_rule(self, rule):
         self.root_rules.append(rule)
         self.next_frontier.append(rule)
-        self.frontier_locks[rule] = Lock()
+        self.frontier_locks[rule] = RLock()
         self.frontier_values[rule] = self.frontier_default_value
