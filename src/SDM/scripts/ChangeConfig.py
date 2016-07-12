@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import sys
+import sys, os
 from ConfigParser import SafeConfigParser
 
 
 def main(argv):
     sc = SafeConfigParser()
-    sc.read('/home/sdm/SDN-Monitoring/config/parameters.cfg')
+    sc.read(os.path.expanduser('~/config/parameters.cfg'))
     sc.set('RunParameters', 'state', sys.argv[1])
     sc.set('RunParameters', 'rate_type', sys.argv[2])
     sc.set('RunParameters', 'timestep', sys.argv[3])
@@ -14,7 +14,7 @@ def main(argv):
     sc.set('RunParameters', 'numHH', sys.argv[5])
     sc.set('RunParameters', 'mechanism', sys.argv[6])
     sc.set('RunParameters', 'common_mask', sys.argv[7])
-    with open('/home/sdm/SDN-Monitoring/config/parameters.cfg', 'wb') as configFile:
+    with open(os.path.expanduser('~/config/parameters.cfg'), 'wb') as configFile:
         sc.write(configFile)
 
 

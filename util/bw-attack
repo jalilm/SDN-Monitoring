@@ -1,6 +1,6 @@
 #!/bin/bash
 ## sends attack traffic at 20 Mbps till detected or normal traffic finishes
-tcpreplay -t -K -l 0 -i h1-eth0 ~/SDN-Monitoring/tmp/sync.pcap &
+tcpreplay -t -K -l 0 -i h1-eth0 ~/tmp/sync.pcap &
 pid_syn=$!
 ## sends normal traffic at 7 Mbps for about 12 mins
 tcpreplay -M 7 -L 10594636 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap

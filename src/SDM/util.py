@@ -1,10 +1,24 @@
 """Utility functions."""
 
 from ConfigParser import RawConfigParser
-import logging
+import logging, os, math
 from src.SDM.scripts.CreateSeveralHH import create
 
 logger = logging.getLogger(__name__)
+
+def ipv4_partition(k):
+    """
+    partitions the ipv4 address space into k disjoint partitions.
+    :param k: the number of partitions.
+    :return: a dictionary contains strings of the partitions.
+    """
+    assert math.log(k,2)%1 == 0
+    ips = []
+    for j in range(0, k):
+        ip_int = j*pow(2,32-int(math.log(k,2)))
+        ips.append(int_to_ipv4(ip_int))
+    return ips
+
 
 def ipv4_to_int(s):
     """
@@ -32,7 +46,7 @@ def get_dirs(fresh=False):
         logger.debug("get_dirs returned with result: %s", get_dirs.dirs)
         return get_dirs.dirs
 
-    home_path = '/home/sdm/SDN-Monitoring/'
+    home_path = os.path.expanduser('~/')
 
     get_dirs.dirs = {
         'home': home_path,
@@ -83,30 +97,49 @@ def get_params(directories, fresh=False):
     params['RunParameters']['mechanism'] = config.get('RunParameters',
                                                      'mechanism')
     params['RunParameters']['common_mask'] = config.getint('RunParameters', 'common_mask')
-    params['RunParameters']['before_attack'] = "~/SDN-Monitoring/util/before_trace"
-    params['RunParameters']['after_attack'] = "~/SDN-Monitoring/util/after_trace"
+    params['RunParameters']['before_attack'] = directories['home'] + "util/before_trace"
+    params['RunParameters']['after_attack'] = directories['home'] + "util/after_trace"
 
     if state == "Pulling":
         params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
         params['RunParameters']['numberOfStations'] = 2
         if rate_type == "BW":
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/bw-attack"
+            params['RunParameters']['attack'] = directories['home'] + "util/bw-attack"
             if direction == "Destination":
-                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/BWPullingController.py"
+                params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/BWPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.BWPullingDatapath.BWPullingDatapath"
             if direction == "Source":
-                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SrcBWPullingController.py"
+                params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/SrcBWPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPullingDatapath.SrcBWPullingDatapath"
         if rate_type == "Syn":
             params['RunParameters']['topoType'] = "src.SDM.topologies.SynTraceTopo.SynTraceTopo"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/syn-attack"
+            params['RunParameters']['attack'] = directories['home'] + "util/syn-attack"
             if direction == "Destination":
-                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SynPullingController.py"
+                params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/SynPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SynPullingDatapath.SynPullingDatapath"
             if direction == "Source":
-                params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/SrcSynPullingController.py"
+                params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/SrcSynPullingController.py"
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcSynPullingDatapath.SrcSynPullingDatapath"
+        if rate_type == "HH-several":
+            assert False
+
+    if state == "Topk":
+        params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
+        params['RunParameters']['numberOfStations'] = 2
+        params['RunParameters']['k'] = params['RunParameters']['common_mask']
+        if rate_type == "BW":
+            params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['before_attack'] = ''#directories['home'] + "util/empty_trace"
+            params['RunParameters']['attack'] = directories['home'] + "util/topk_trace"
+            params['RunParameters']['after_attack'] = ''#directories['home'] + "util/empty_trace"
+            if direction == "Destination":
+                assert False
+            if direction == "Source":
+                params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/SrcBWTopkController.py"
+                params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWTopkDatapath.SrcBWTopkDatapath"
+        if rate_type == "Syn":
+            assert False
         if rate_type == "HH-several":
             assert False
 
@@ -116,8 +149,8 @@ def get_params(directories, fresh=False):
         params['RunParameters']['mininet_switch'] = "src.SDM.nodes.PushingSwitch.PushingSwitch"
         if rate_type == "BW":
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
-            params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/PushingController.py"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/bw-attack"
+            params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/PushingController.py"
+            params['RunParameters']['attack'] = directories['home'] + "util/bw-attack"
             if direction == "Destination":
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.BWPushingDatapath.BWPushingDatapath"
                 params['RunParameters']['middleware'] = "src.SDM.nodes.BWMiddleWare.BWMiddleWare"
@@ -126,8 +159,8 @@ def get_params(directories, fresh=False):
                 params['RunParameters']['middleware'] = "src.SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
         if rate_type == "Syn":
             params['RunParameters']['topoType'] = "src.SDM.topologies.SynTraceTopo.SynTraceTopo"
-            params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/Pushing15Controller.py"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/syn-attack"
+            params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/Pushing15Controller.py"
+            params['RunParameters']['attack'] = directories['home'] + "util/syn-attack"
             if direction == "Destination":
                 params['RunParameters']['Datapath'] = "src.SDM.nodes.SynPushingDatapath.SynPushingDatapath"
                 params['RunParameters']['middleware'] = "src.SDM.nodes.SynMiddleWare.SynMiddleWare"
@@ -142,8 +175,8 @@ def get_params(directories, fresh=False):
             params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
             create(params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
-            params['RunParameters']['ryuApps'] = "~/SDN-Monitoring/src/SDM/apps/PushingController.py"
-            params['RunParameters']['attack'] = "~/SDN-Monitoring/util/several-attack"
+            params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/PushingController.py"
+            params['RunParameters']['attack'] = directories['home'] + "util/several-attack"
             params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWPushingDatapath.SrcBWPushingDatapath"
             params['RunParameters']['middleware'] = "src.SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
 

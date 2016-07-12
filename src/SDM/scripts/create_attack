@@ -10,7 +10,7 @@ do
 	first=${i}
 	let last=${i}+${caida_rate}-1
 	~/wireshark/editcap -r ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap ./tmp.pcap "${first}"-"${last}"
-	mergecap -a -w tmp_combined.pcap ~/SDN-Monitoring/tmp/sync.pcap ./tmp.pcap
+	mergecap -a -w tmp_combined.pcap ~/tmp/sync.pcap ./tmp.pcap
 	rm ./tmp.pcap
 	if [ ! -f ./attack.pcap ]; then
 		mv ./tmp_combined.pcap ./attack.pcap
