@@ -43,11 +43,14 @@ class TraceTest(BaseTest):
         sleep(30)
         self.detect_alert()
         host1 = self.net.get('h1')
-        host1.cmd(self.params['RunParameters']['before_attack'])
-        self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack started traces from h1")
-        host1.cmd(self.params['RunParameters']['attack'])
-        self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack finished from h1")
-        host1.cmd(self.params['RunParameters']['after_attack'])
+        if self.params['RunParameters']['before_attack'] != '':
+            host1.cmd(self.params['RunParameters']['before_attack'])
+        if self.params['RunParameters']['attack'] != '':
+            self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack started traces from h1")
+            host1.cmd(self.params['RunParameters']['attack'])
+            self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack finished from h1")
+        if self.params['RunParameters']['after_attack'] != '':
+            host1.cmd(self.params['RunParameters']['after_attack'])
         self.logger.debug("Stopping the net")
         if str(self.shared_mem_fd[:6]) != self.params['General']['alertToken']:
             self.shared_mem_fd[:6] = self.params['General']['finishGenerationToken']
