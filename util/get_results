@@ -1,0 +1,15 @@
+#!/bin/bash
+
+time_step="0.01 0.1 1.0 5.0 10.0 15.0 20.0"
+numHH="1"
+common_mask="1 2 4 8 16 32 64 128"
+for h in $numHH; do
+	for ts in $time_step; do
+	    for c in $common_mask; do
+		    log_file="./${ts}-${h}-${c}.log"
+		    echo ${ts},${c} >> ~/res
+		    grep '255\.255\.255\.255' $log_file | sort -n -r -k6 | sort -u -k4,4 | sort -n -r -k6 | head -n ${c} | cut -d" " -f4-6 >> ~/res
+		done
+    done
+done
+
