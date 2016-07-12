@@ -130,9 +130,9 @@ def get_params(directories, fresh=False):
         params['RunParameters']['k'] = params['RunParameters']['common_mask']
         if rate_type == "BW":
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
-            params['RunParameters']['before_attack'] = ''#directories['home'] + "util/empty_trace"
+            params['RunParameters']['before_attack'] = ''
             params['RunParameters']['attack'] = directories['home'] + "util/topk_trace"
-            params['RunParameters']['after_attack'] = ''#directories['home'] + "util/empty_trace"
+            params['RunParameters']['after_attack'] = ''
             if direction == "Destination":
                 assert False
             if direction == "Source":
