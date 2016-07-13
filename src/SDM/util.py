@@ -173,7 +173,7 @@ def get_params(directories, fresh=False):
             f1 = ipv4_to_int
             f2 = int_to_ipv4
             params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
-            create(params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
+            create(get_dirs(), params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
             params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
             params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/PushingController.py"
             params['RunParameters']['attack'] = directories['home'] + "util/several-attack"
