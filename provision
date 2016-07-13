@@ -16,7 +16,7 @@ rm openvswitch-2.5.0.tar.gz
 cd ~/openvswitch-2.5.0/
 ./boot.sh
 ./configure --with-linux=/lib/modules/`uname -r`/build
-patch < /vagrant/acinclude.patch
+patch < ~/acinclude.patch
 make
 sudo make install
 sudo cp /lib/modules/3.13.0-91-generic/kernel/net/openvswitch/openvswitch.ko .

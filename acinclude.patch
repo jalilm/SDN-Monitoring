@@ -1,0 +1,11 @@
+--- ./acinclude.m4	2016-02-24 12:20:17.446932768 +0000
++++ ./acinclude.m4.new	2016-07-05 19:41:06.635967486 +0000
+@@ -398,7 +398,7 @@
+   OVS_GREP_IFELSE([$KSRC/include/linux/netfilter.h], [nf_hookfn.*nf_hook_ops],
+                   [OVS_DEFINE([HAVE_NF_HOOKFN_ARG_OPS])])
+   OVS_FIND_FIELD_IFELSE([$KSRC/include/linux/netfilter_ipv6.h], [nf_ipv6_ops],
+-                        [fragment], [OVS_DEFINE([HAVE_NF_IPV6_OPS_FRAGMENT])])
++                        [fragment.*sock], [OVS_DEFINE([HAVE_NF_IPV6_OPS_FRAGMENT])])
+ 
+   OVS_GREP_IFELSE([$KSRC/include/net/netfilter/nf_conntrack.h],
+                   [tmpl_alloc.*conntrack_zone],
