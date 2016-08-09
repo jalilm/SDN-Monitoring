@@ -1,21 +1,19 @@
 #!/bin/bash
 
-shopt -s expand_aliases
-source ~/.bash_aliases
-
 timestamp() {
 	date +"%T"
 }
 
-notify=1
-state="Pushing" #Pulling Pushing"
+#notify=1
+state="Pulling" #Pulling Pushing"
 time_step="0.25" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
-rate="HH-several" #HH-several Syn BW"
-direction="Source" #Source Destination"
-numHH="7 8 9 10 11 12" # 5 6"
+rate="BW" #HH-several Syn BW"
+direction="Destination" #Source Destination"
+numHH="1" #5 6 7 8 9 10 11 12"
 mechanism="table" #prio:"
 common_mask="24" #0 8 16 24 30"
 
+cd ~/SDN-Monitoring/
 for m in $mechanism; do
 for s in $state; do
 for r in $rate; do
@@ -23,7 +21,7 @@ for d in $direction; do
 	time_stamp=`timestamp`
 	folder_name="logs/${m}-${s}-${r}-${d}-"${time_stamp}
 	mkdir -p ${folder_name}
-	if [[ -d "logs/${m}-${s}-${r}-${d}/" ]]; then
+	if [[ -L "logs/${m}-${s}-${r}-${d}" ]]; then
 		rm "logs/${m}-${s}-${r}-${d}"
 	fi
 	ln -s "../"${folder_name} "logs/${m}-${s}-${r}-${d}"
@@ -32,22 +30,23 @@ for d in $direction; do
 	for c in $common_mask; do
 		log_file="${folder_name}/${ts}-${h}-${c}.log"
 		pcap_file="${folder_name}/${ts}-${h}-${c}.pcap"
-		python ./src/SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m} ${c}
-		~/wireshark/tshark -i lo -w "${pcap_file}" &
+		python ./SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m} ${c}
+		tshark -i lo -w "${pcap_file}" &
 		pid=$!
 		sleep 10s
-		PYTHONPATH=$PYTHONPATH ./src/SDM/scripts/run_env.py
-	        kill -9 $pid
-        	sleep 10s
+		PYTHONPATH=$PYTHONPATH ./SDM/scripts/run_env.py
+	    kill -9 $pid
+        sleep 10s
 		a=`grep "Alert!" ${log_file} | cut -d"(" -f2 | cut -d"," -f1 | uniq | wc -l`
 		if [[ $a != $h ]]; then
-			if [[ $notify != 0 ]]; then
-				notify Failed-${ts}-${h}-${c}
-			fi
-			sleep 2m
+			#if [[ $notify != 0 ]]; then
+			#	notify Failed-${ts}-${h}-${c}
+			#fi
+			sleep 30s
 			mn -c
 			continue
 		fi
+		# TODO: Consider moving to after_test
 		counters=`grep Maximal ${log_file} | rev | cut -d":" -f1 | rev`
 		attack_start=`sed -n -e '/Attack started/,/Time step #/ p' ${log_file} | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
 	        alert_step=`tac ${log_file} | sed -n -e '/Alert/,/Time step #/ p' | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
@@ -64,10 +63,10 @@ for d in $direction; do
 		do
 		    echo "${arr_steps[$i]}, ${arr_counters[i]}" >> "${folder_name}/${ts}-${h}-${c}.counters"
 		done
-		if [[ $notify != 0 ]]; then
-		        notify Success-${ts}-${h}-${c}
-		fi
-	        sleep 2m
+		#if [[ $notify != 0 ]]; then
+		#        notify Success-${ts}-${h}-${c}
+		#fi
+	    sleep 30s
 		mn -c
 	done
 	done

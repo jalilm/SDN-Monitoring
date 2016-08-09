@@ -1,5 +1,5 @@
 #!/bin/bash
 
-## sends traffic for about 3 mins at rate of 7Mbps
-tcpreplay -i h1-eth0 -M 7 -L 2648659 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130100.UTC.anon.pcap
-#sleep 30s
+# sends traffic for about 3 mins at rate of 7Mbps
+tcpreplay -i h1-eth0 -M 7 -L 2648659 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap
+sleep 30s
