@@ -1,10 +1,11 @@
 """Utility functions."""
 
+import math
+import os
 from ConfigParser import RawConfigParser
-import logging, os, math
+
 from src.SDM.scripts.CreateSeveralHH import create
 
-logger = logging.getLogger(__name__)
 
 def ipv4_partition(k):
     """
@@ -41,9 +42,7 @@ def get_dirs(fresh=False):
     directories.
     If fresh=True, the dict is regenerated.
     """
-    logger.debug("Called get_dirs with fresh=%s", fresh)
     if fresh == False and "dirs" in get_dirs.__dict__:
-        logger.debug("get_dirs returned with result: %s", get_dirs.dirs)
         return get_dirs.dirs
 
     home_path = os.path.expanduser('~/')
@@ -57,7 +56,6 @@ def get_dirs(fresh=False):
         'bin': home_path + 'bin/',
         'tmp': home_path + 'tmp/'
     }
-    logger.debug("get_dirs returned with result: %s", get_dirs.dirs)
     return get_dirs.dirs
 
 
@@ -67,9 +65,7 @@ def get_params(directories, fresh=False):
     in ${PROJ_PATH}\\config\\parameters.cfg.
     If fresh=True, the dist is regenerated.
     """
-    logger.debug("Called get_params with fresh=%s", fresh)
     if fresh == False and "params" in get_params.__dict__:
-        logger.debug("get_params returned with result: %s", get_params.params)
         return get_params.params
 
     config = RawConfigParser()
@@ -125,19 +121,27 @@ def get_params(directories, fresh=False):
             assert False
 
     if state == "Topk":
-        params['RunParameters']['test'] = "src.SDM.tests.TraceTest.TraceTest"
+        params['RunParameters']['test'] = "src.SDM.tests.DoubleKTest.DoubleKTest"
         params['RunParameters']['numberOfStations'] = 2
-        params['RunParameters']['k'] = params['RunParameters']['common_mask']
+        params['RunParameters']['k'] = config.getint('RunParameters', 'k')
+        params['RunParameters']['counters'] = config.getint('RunParameters', 'counters')
+        params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
+        params['RunParameters']['before_attack'] = ''
+        params['RunParameters']['attack'] = directories['home'] + "util/topk_trace"
+        params['RunParameters']['after_attack'] = ''
+        if direction == "Destination":
+            assert False
+        if direction == "Source":
+            params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/SrcBWTopkController.py"
+            params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWTopkDatapath.SrcBWTopkDatapath"
         if rate_type == "BW":
-            params['RunParameters']['topoType'] = "src.SDM.topologies.TraceTopo.TraceTopo"
-            params['RunParameters']['before_attack'] = ''
-            params['RunParameters']['attack'] = directories['home'] + "util/topk_trace"
-            params['RunParameters']['after_attack'] = ''
-            if direction == "Destination":
-                assert False
-            if direction == "Source":
-                params['RunParameters']['ryuApps'] = directories['home'] + "src/SDM/apps/SrcBWTopkController.py"
-                params['RunParameters']['Datapath'] = "src.SDM.nodes.SrcBWTopkDatapath.SrcBWTopkDatapath"
+            params['RunParameters']['tempStepChange'] = "normal"
+        elif rate_type == "IncreasingBW":
+            params['RunParameters']['tempStepChange'] = "positive"
+        elif rate_type == "DecreasingBW":
+            params['RunParameters']['tempStepChange'] = "negative"
+        elif rate_type == "IncDecBW":
+            params['RunParameters']['tempStepChange'] = "posneg"
         if rate_type == "Syn":
             assert False
         if rate_type == "HH-several":
@@ -224,7 +228,6 @@ def get_params(directories, fresh=False):
         params['FlowLimits'][name] = float(value)
 
     get_params.params = params
-    logger.debug("get_params returned with result: %s", get_params.params)
     return get_params.params
 
 

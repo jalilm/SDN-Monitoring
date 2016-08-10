@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Creates secXX.stat file which contains total bytecount per source IP address in the XX second.
+# Since its a recording of 1 second thus it is equal to BW. The file is sorted by BW.
+
+files="00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59"
+for i in $files; do
+    cd ~/CAIDA-DLT/sec${i}/
+	tshark -r sec${i}.pcap -z conv,ip > ./sec${i}_tmp_stat
+	cat ./sec${i}_tmp_stat | egrep -v -E "<." | egrep -E "> " | tr -s " " | sed 's/^ *//g' | cut -d" " -f3-7 | awk 'BEGIN { FS=OFS=SUBSEP=" "}{arr[$1]+=$5;}END {for (i in arr) print i,arr[i]}' | sort -n -r -k2 > ./sec${i}.stat
+	rm ./sec${i}_tmp_stat
+	cd ..
+done

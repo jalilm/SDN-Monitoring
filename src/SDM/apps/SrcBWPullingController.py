@@ -1,8 +1,9 @@
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
-from src.SDM.rules.IPSrcRule import IPSrcRule
+
 from src.SDM.apps.PullingController import PullingController
+from src.SDM.rules.IPSrcRule import IPSrcRule
 
 
 class SrcBWPullingController(PullingController):
@@ -28,12 +29,12 @@ class SrcBWPullingController(PullingController):
 
                 rule = IPSrcRule(ev.msg.datapath, ipv4_string, subnet_string, stat.table_id, stat.priority, None)
 
-                self.info('datapath         '
-                          'ipv4-src                           '
-                          'current bandwidth  duration           bytes')
-                self.info('---------------- '
-                          '---------------------------------- '
-                          '------------------ ------------------ --------')
+                # self.info('datapath         '
+                #          'ipv4-src                                       '
+                #          'current bandwidth  duration           bytes')
+                # self.info('---------------- '
+                #          '---------------------------------------------- '
+                #          '------------------ ------------------ --------')
 
                 try:
                     new_byte_count = stat.byte_count - main_datapath.frontier_values[rule]['byte_count']
@@ -44,7 +45,7 @@ class SrcBWPullingController(PullingController):
                     'duration': stat.duration_sec + (stat.duration_nsec / 1000000000.0), 'byte_count': stat.byte_count}
                 except ZeroDivisionError:
                     if stat.byte_count == 0:
-                        self.info('%016x %34s %018.9f %018.9f %08d',
+                        self.info('%016x %46s %018.9f %018.9f %08d',
                                   ev.msg.datapath.id,
                                   rule,
                                   float("nan"),
@@ -56,7 +57,7 @@ class SrcBWPullingController(PullingController):
                     else:
                         current_rate = float("inf")
 
-                self.info('%016x %34s %018.9f %018.09f %08d',
+                self.info('%016x %46s %018.9f %018.09f %08d',
                           ev.msg.datapath.id,
                           rule,
                           current_rate,

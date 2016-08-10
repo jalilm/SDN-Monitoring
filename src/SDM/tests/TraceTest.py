@@ -1,6 +1,6 @@
-from time import sleep
-from datetime import datetime
 import logging
+from datetime import datetime
+from time import sleep
 
 from src.SDM.nodes.RyuRemoteController import RyuRemoteController
 from src.SDM.tests.BaseTest import BaseTest
@@ -19,10 +19,10 @@ class TraceTest(BaseTest):
     def setup_net(self):
         self.logger.debug("setup_net")
         net = super(TraceTest, self).setup_net()
-        net.addController(RyuRemoteController(name="c0", ip=self.params['General']['controllerIP'],
-                                              port=self.params['General']['controllerPort'],
+        net.addController(RyuRemoteController(name="c0", ip=self.parameters['General']['controllerIP'],
+                                              port=self.parameters['General']['controllerPort'],
                                               ryuArgs=["",
-                                                       self.params['RunParameters']['ryuApps']]))
+                                                       self.parameters['RunParameters']['ryuApps']]))
         return net
 
     def run(self):
@@ -30,7 +30,7 @@ class TraceTest(BaseTest):
         Executes the test and Mininet and the tcpreplay.
         """
         self.logger.info("run")
-        if self.params['RunParameters']['interact']:
+        if self.parameters['RunParameters']['interact']:
             self.net.build()
             self.net.interact()
             return
@@ -43,16 +43,16 @@ class TraceTest(BaseTest):
         sleep(30)
         self.detect_alert()
         host1 = self.net.get('h1')
-        if self.params['RunParameters']['before_attack'] != '':
-            host1.cmd(self.params['RunParameters']['before_attack'])
-        if self.params['RunParameters']['attack'] != '':
+        if self.parameters['RunParameters']['before_attack'] != '':
+            host1.cmd(self.parameters['RunParameters']['before_attack'])
+        if self.parameters['RunParameters']['attack'] != '':
             self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack started traces from h1")
-            host1.cmd(self.params['RunParameters']['attack'])
+            host1.cmd(self.parameters['RunParameters']['attack'])
             self.logger.info(" - " + datetime.now().strftime('%H:%M:%S.%f') + " Attack finished from h1")
-        if self.params['RunParameters']['after_attack'] != '':
-            host1.cmd(self.params['RunParameters']['after_attack'])
+        if self.parameters['RunParameters']['after_attack'] != '':
+            host1.cmd(self.parameters['RunParameters']['after_attack'])
         self.logger.debug("Stopping the net")
-        if str(self.shared_mem_fd[:6]) != self.params['General']['alertToken']:
-            self.shared_mem_fd[:6] = self.params['General']['finishGenerationToken']
-            sleep(self.params['RunParameters']['timeStep'] + 1)
+        if str(self.shared_mem_fd[:6]) != self.parameters['General']['alertToken']:
+            self.shared_mem_fd[:6] = self.parameters['General']['finishGenerationToken']
+            sleep(self.parameters['RunParameters']['timeStep'] + 1)
             self.net.stop()

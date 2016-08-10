@@ -1,26 +1,31 @@
-from src.SDM.nodes.TopkStrategy import TopkStrategy
-from src.SDM.nodes.Datapath import Datapath
-from src.SDM.rules.IPSrcRule import IPSrcRule
-from src.SDM.util import *
+import logging
 import math
+
+from src.SDM.nodes.Datapath import Datapath
+from src.SDM.nodes.TopkStrategy import TopkStrategy
+from src.SDM.rules.IPSrcRule import IPSrcRule
 from src.SDM.rules.InPortRule import InPortRule
+from src.SDM.util import *
+
 
 class SrcBWTopkDatapath(TopkStrategy, Datapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         self.dirs = get_dirs()
         self.parameters = get_params(self.dirs)
         Datapath.__init__(self, datapath)
-        TopkStrategy.__init__(self, self.parameters['RunParameters']['k'], first_monitoring_table_id)
+        TopkStrategy.__init__(self, self.parameters['RunParameters']['k'], self.parameters['RunParameters']['counters'],
+                              first_monitoring_table_id)
         self.logger = logging.getLogger(__name__)
-        self.logger.info("SrcBWTopkDatapath")
+        self.logger.debug("SrcBWTopkDatapath")
 
         # In this part register the monitoring rules
         # For each rule, register the IP and subnet mask
         # and the created Match.)
-        ips = ipv4_partition(2*self.parameters['RunParameters']['k'])
+        ips = ipv4_partition(self.parameters['RunParameters']['counters'])
 
         for ipv4_string in ips:
-            subnet_string = CIDR_mask_to_ipv4_subnet_mask(int(math.log(2*self.parameters['RunParameters']['k'], 2)))
+            subnet_string = CIDR_mask_to_ipv4_subnet_mask(
+                int(math.log(self.parameters['RunParameters']['counters'], 2)))
             rule = IPSrcRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
             self.add_monitoring_rule(rule)
 
@@ -40,7 +45,7 @@ class SrcBWTopkDatapath(TopkStrategy, Datapath):
     def request_stats(self):
         finished_last_round = self.received_all_replys()
         while not finished_last_round:
-            logger.warn("XXX requesting stats while last epoch stats are not ready yet!")
+            self.warn("XXX requesting stats while last epoch stats are not ready yet!")
             finished_last_round = self.received_all_replys()
 
         if self.alert:

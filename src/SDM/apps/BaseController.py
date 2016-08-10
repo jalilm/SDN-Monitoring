@@ -1,16 +1,17 @@
+import mmap
 from multiprocessing import Lock
 from time import time
-import mmap
 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
-from ryu.ofproto import ofproto_v1_3
-from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
-from src.SDM.util import *
+from ryu.lib.packet import packet
+from ryu.ofproto import ofproto_v1_3
+
 from src.SDM.rules.Rule import Rule
+from src.SDM.util import *
 
 
 class BaseController(app_manager.RyuApp):
@@ -23,11 +24,17 @@ class BaseController(app_manager.RyuApp):
         self.datapaths = {}
         self.res_lock = Lock()
 
+    def debug(self, msg, *args, **kwargs):
+        self.logger.debug('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
+
     def info(self, msg, *args, **kwargs):
-        self.logger.info(str(time()) + " " + msg, *args, **kwargs)
+        self.logger.info('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
 
     def warn(self, msg, *args, **kwargs):
-        self.logger.warn(str(time()) + " " + msg, *args, **kwargs)
+        self.logger.warn('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        self.logger.error('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -49,6 +56,10 @@ class BaseController(app_manager.RyuApp):
             self.datapaths[datapath].set_main_monitor_table()
         else:
             assert False
+        self.after_datapaths_construction()
+
+    def after_datapaths_construction(self):
+        pass
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
@@ -60,7 +71,7 @@ class BaseController(app_manager.RyuApp):
         if current_stat > self.get_rule_threshold(rule):
             if not main_datapath.increase_monitoring_level(rule):
                 self.info('Alert! traffic of flow %s is above threshold', rule)
-                self.alert()
+                self.issue_alert()
             else:
                 self.info('Finer monitoring rules for %s were added', rule)
         elif current_stat <= (self.get_rule_threshold(rule) / 2):
@@ -87,7 +98,7 @@ class BaseController(app_manager.RyuApp):
         src = eth.src
         self.warn("Packet in event %016x %s %s %s", dpid, src, dst, in_port)
 
-    def alert(self):
+    def issue_alert(self):
         with open(self.parameters['General']['sharedMemFilePath'], "r+b") as _file:
             mem_map = mmap.mmap(_file.fileno(), 0)
             mem_map[:6] = self.parameters['General']['alertToken']

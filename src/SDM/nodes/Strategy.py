@@ -1,12 +1,12 @@
+import logging
 from multiprocessing import RLock
-
-from src.SDM.util import *
+from time import time
 
 
 class Strategy(object):
     def __init__(self, first_monitoring_table_id=1):
         self.logger = logging.getLogger(__name__)
-        self.logger.info("Strategy")
+        self.debug("Strategy")
         self.first_monitoring_table_id = first_monitoring_table_id
         self.root_rules = []
         self.frontier = []
@@ -16,6 +16,18 @@ class Strategy(object):
         self.frontier_locks = {}
         self.round_status = {}
         self.sibling_rule = {}
+
+    def debug(self, msg, *args, **kwargs):
+        self.logger.debug('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self.logger.info('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
+
+    def warn(self, msg, *args, **kwargs):
+        self.logger.warn('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        self.logger.error('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
 
     def received_all_replys(self):
         for rule in self.frontier:
@@ -29,15 +41,15 @@ class Strategy(object):
             self.next_frontier.append(self.get_original_rule(rule))
             return False  # Alert
         if rule not in self.frontier:
-            self.logger.error("rule is not in subrules - 1")
-            self.logger.error("rule is %s", rule)
-            self.logger.error("frontier is %s", self.frontier)
+            self.error("rule is not in subrules - 1")
+            self.error("rule is %s", rule)
+            self.error("frontier is %s", self.frontier)
             assert False
         with self.frontier_locks[rule]:
             if rule not in self.frontier:
-                self.logger.error("rule is not in subrules - 2")
-                self.logger.error("rule is %s", rule)
-                self.logger.error("frontier is %s", self.frontier)
+                self.error("rule is not in subrules - 2")
+                self.error("rule is %s", rule)
+                self.error("frontier is %s", self.frontier)
                 assert False
             orig_rule = self.get_original_rule(rule)
             self.set_refined_monitoring_rules(orig_rule)
@@ -63,7 +75,7 @@ class Strategy(object):
             self.next_frontier.append(orig_rule)
             return False, "I'm root rule"
         if orig_rule not in self.frontier:
-            self.logger.error("rule is not in subrules - 3")
+            self.error("rule is not in subrules - 3")
             assert False
 
         with self.frontier_locks[orig_rule]:
@@ -109,7 +121,7 @@ class Strategy(object):
         for r in self.frontier:
             if r == rule:
                 return r
-        self.logger.error("rule is not original")
+        self.error("rule is not original")
         assert False
 
     def request_stats(self):

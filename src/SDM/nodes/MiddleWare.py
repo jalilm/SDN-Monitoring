@@ -1,11 +1,13 @@
-from threading import *
-from datetime import datetime
-import socket
+import logging
+import mmap
 import select
+import socket
+from datetime import datetime
+from threading import *
 from threading import Thread
 from time import sleep
 
-from src.SDM.util import *
+from ryu.lib import hub
 from ryu.ofproto import ofproto_common
 from ryu.ofproto import ofproto_parser
 from ryu.ofproto import ofproto_protocol
@@ -14,9 +16,9 @@ from ryu.ofproto import ofproto_v1_2
 from ryu.ofproto import ofproto_v1_3
 from ryu.ofproto import ofproto_v1_4
 from ryu.ofproto import ofproto_v1_5
-from ryu.lib import hub
+
 from src.SDM.nodes.Strategy import Strategy
-import mmap
+from src.SDM.util import *
 
 
 class ProxyThread(Thread):
@@ -247,7 +249,7 @@ class MiddleWare(Strategy):
     def handle_rule_stat(self, rule, current_stat):
         if current_stat > self.get_rule_threshold(rule):
             if not self.increase_monitoring_level(rule):
-                self.alert(rule)
+                self.issue_alert(rule)
             else:
                 self.logger.info('Finer monitoring rules for %s were added', rule)
         elif current_stat <= (self.get_rule_threshold(rule) / 2):
@@ -264,7 +266,7 @@ class MiddleWare(Strategy):
     def get_rule_stats(self, rule):
         return rule.get_stats()
 
-    def alert(self, rule):
+    def issue_alert(self, rule):
         if rule in self.alerts:
             return
         self.alerts.append(rule)

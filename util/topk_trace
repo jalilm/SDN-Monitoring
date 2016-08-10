@@ -1,6 +1,2 @@
-#!/bin/bash
-
-tcpreplay -l 0 -i h1-eth0 ~/CAIDA-DLT/equinix-chicago.dirA.20140320-130000.UTC.anon.pcap &
-pid_syn=$!
-sleep 11m
-kill -9 $pid_syn
+# !/bin/bash
+tcpreplay -M 0.95625 -i h1-eth0 /home/vagrant/CAIDA-DLT/sec14/sec14.pcap

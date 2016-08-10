@@ -9,12 +9,14 @@ timestamp() {
 
 notify=1
 state="Topk" #Pulling Pushing"
-time_step="0.01 0.1 1.0 5.0 10.0 15.0 20.0"
-rate="BW" #HH-several Syn BW"
+time_step="50.0"
+rate="BW" #IncDecBW DecreasingBW IncreasingBW HH-several Syn BW"
 direction="Source" #Source Destination"
 numHH="1" #8 9 10 11 12 5 6"
 mechanism="prio" #table"
-common_mask="1 2 4 8 16 32 64 128" #0 8 16 24 30"
+common_mask="0" # 8 16 24 30"
+ks="2 5 10 15 20"
+counters="1024" #16 32 64 128 256 512"
 
 for m in $mechanism; do
 for s in $state; do
@@ -30,45 +32,50 @@ for d in $direction; do
 	for h in $numHH; do
 	for ts in $time_step; do
 	for c in $common_mask; do
-		log_file="${folder_name}/${ts}-${h}-${c}.log"
-		pcap_file="${folder_name}/${ts}-${h}-${c}.pcap"
-		python ./src/SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m} ${c}
+	for k in $ks; do
+	for counter in $counters; do
+		log_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.log"
+		pcap_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.pcap"
+		python ./src/SDM/scripts/ChangeConfig.py --state=${s} --rate_type=${r} --timestep=${ts} --direction=${d} --numHH=${h} --mechanism=${m} --common_mask=${c} --k=${k} --counters=${counter}
 		tshark -i lo -w "${pcap_file}" &
 		pid=$!
 		sleep 10s
 		PYTHONPATH=$PYTHONPATH ./src/SDM/scripts/run_env.py
-	        kill -9 $pid
-        	sleep 10s
+	    kill -9 $pid
+        #sleep 10s
 		a=`grep "Alert!" ${log_file} | cut -d"(" -f2 | cut -d"," -f1 | uniq | wc -l`
 		if [[ $a != $h ]]; then
 			if [[ $notify != 0 ]]; then
-				notify Failed-${ts}-${h}-${c}
+				notify Failed-${h}-${ts}-${c}-${k}-${counter}
 			fi
-			sleep 2m
+			sleep 30s
 			mn -c
 			continue
 		fi
-		counters=`grep Maximal ${log_file} | rev | cut -d":" -f1 | rev`
-		attack_start=`sed -n -e '/Attack started/,/Time step #/ p' ${log_file} | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
-	        alert_step=`tac ${log_file} | sed -n -e '/Alert/,/Time step #/ p' | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
-	        let steps=${alert_step}-${attack_start}
-	        time=`echo ${steps}*${ts} | bc`
-	        ofp_packets=`sudo tshark -2 -r ${pcap_file} -R "(openflow||openflow_v1||openflow_v4||openflow_v5) && ((tcp.srcport==6633) || (tcp.dstport==6633))" | wc -l`
-	        echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${c},${counters} >> "logs/${m}-${s}-${r}-${d}.res"
-		all_counters=`grep "counters" ${log_file} | cut -d":" -f3`
-		arr_counters=($all_counters)
-		all_steps=`grep "step" ${log_file} | cut -d"#" -f2 | cut -d" " -f1`
-		arr_steps=($all_steps)
-		total=${#arr_steps[*]}
-		for (( i=${attack_start}-1; i<=$(( $total -1 )); i++ ))
-		do
-		    echo "${arr_steps[$i]}, ${arr_counters[i]}" >> "${folder_name}/${ts}-${h}-${c}.counters"
-		done
+		# TODO: Consider moving to after_test
+		#counters=`grep Maximal ${log_file} | rev | cut -d":" -f1 | rev`
+		#attack_start=`sed -n -e '/Attack started/,/Time step #/ p' ${log_file} | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
+	    #alert_step=`tac ${log_file} | sed -n -e '/Alert/,/Time step #/ p' | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
+	    #let steps=${alert_step}-${attack_start}
+	    #time=`echo ${steps}*${ts} | bc`
+	    #ofp_packets=`sudo tshark -2 -r ${pcap_file} -R "(openflow||openflow_v1||openflow_v4||openflow_v5) && ((tcp.srcport==6633) || (tcp.dstport==6633))" | wc -l`
+	    #echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${c},${counters} >> "logs/${m}-${s}-${r}-${d}.res"
+		#all_counters=`grep "counters" ${log_file} | cut -d":" -f3`
+		#arr_counters=($all_counters)
+		#all_steps=`grep "step" ${log_file} | cut -d"#" -f2 | cut -d" " -f1`
+		#arr_steps=($all_steps)
+		#total=${#arr_steps[*]}
+		#for (( i=${attack_start}-1; i<=$(( $total -1 )); i++ ))
+		#do
+		#    echo "${arr_steps[$i]}, ${arr_counters[i]}" >> "${folder_name}/${ts}-${h}-${c}.counters"
+		#done
 		if [[ $notify != 0 ]]; then
-		        notify Success-${ts}-${h}-${c}
+		        notify Success-${h}-${ts}-${c}-${k}-${counter}
 		fi
-	        sleep 2m
+	        sleep 30s
 		mn -c
+	done
+	done
 	done
 	done
 	done
