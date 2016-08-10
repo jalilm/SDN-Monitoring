@@ -36,11 +36,11 @@ for d in $direction; do
 	for counter in $counters; do
 		log_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.log"
 		pcap_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.pcap"
-		python ./src/SDM/scripts/ChangeConfig.py --state=${s} --rate_type=${r} --timestep=${ts} --direction=${d} --numHH=${h} --mechanism=${m} --common_mask=${c} --k=${k} --counters=${counter}
+		python ./SDM/scripts/ChangeConfig.py --state=${s} --rate_type=${r} --timestep=${ts} --direction=${d} --numHH=${h} --mechanism=${m} --common_mask=${c} --k=${k} --counters=${counter}
 		tshark -i lo -w "${pcap_file}" &
 		pid=$!
 		sleep 10s
-		PYTHONPATH=$PYTHONPATH ./src/SDM/scripts/run_env.py
+		PYTHONPATH=$PYTHONPATH ./SDM/scripts/run_env.py
 	    kill -9 $pid
         #sleep 10s
 		a=`grep "Alert!" ${log_file} | cut -d"(" -f2 | cut -d"," -f1 | uniq | wc -l`
