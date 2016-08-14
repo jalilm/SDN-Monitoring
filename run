@@ -1,23 +1,21 @@
 #!/bin/bash
 
-shopt -s expand_aliases
-source ~/.bash_aliases
-
 timestamp() {
 	date +"%T"
 }
 
-notify=1
-state="Topk" #Pulling Pushing"
-time_step="50.0"
-rate="BW" #IncDecBW DecreasingBW IncreasingBW HH-several Syn BW"
-direction="Source" #Source Destination"
-numHH="1" #8 9 10 11 12 5 6"
-mechanism="prio" #table"
-common_mask="0" # 8 16 24 30"
+#notify=1
+state="Pulling" #Pulling Pushing"
+time_step="0.25" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
+rate="BW" #HH-several Syn BW"
+direction="Destination" #Source Destination"
+numHH="1" #5 6 7 8 9 10 11 12"
+mechanism="table" #prio:"
+common_mask="24" #0 8 16 24 30"
 ks="2 5 10 15 20"
 counters="1024" #16 32 64 128 256 512"
 
+cd ~/SDN-Monitoring/
 for m in $mechanism; do
 for s in $state; do
 for r in $rate; do
@@ -25,7 +23,7 @@ for d in $direction; do
 	time_stamp=`timestamp`
 	folder_name="logs/${m}-${s}-${r}-${d}-"${time_stamp}
 	mkdir -p ${folder_name}
-	if [[ -d "logs/${m}-${s}-${r}-${d}/" ]]; then
+	if [[ -L "logs/${m}-${s}-${r}-${d}" ]]; then
 		rm "logs/${m}-${s}-${r}-${d}"
 	fi
 	ln -s "../"${folder_name} "logs/${m}-${s}-${r}-${d}"
@@ -34,6 +32,10 @@ for d in $direction; do
 	for c in $common_mask; do
 	for k in $ks; do
 	for counter in $counters; do
+		log_file="${folder_name}/${ts}-${h}-${c}.log"
+		pcap_file="${folder_name}/${ts}-${h}-${c}.pcap"
+		python ./SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m} ${c}
+		tshark -i lo -w "${pcap_file}" &
 		log_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.log"
 		pcap_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.pcap"
 		python ./SDM/scripts/ChangeConfig.py --state=${s} --rate_type=${r} --timestep=${ts} --direction=${d} --numHH=${h} --mechanism=${m} --common_mask=${c} --k=${k} --counters=${counter}
@@ -42,12 +44,12 @@ for d in $direction; do
 		sleep 10s
 		PYTHONPATH=$PYTHONPATH ./SDM/scripts/run_env.py
 	    kill -9 $pid
-        #sleep 10s
+        sleep 10s
 		a=`grep "Alert!" ${log_file} | cut -d"(" -f2 | cut -d"," -f1 | uniq | wc -l`
 		if [[ $a != $h ]]; then
-			if [[ $notify != 0 ]]; then
-				notify Failed-${h}-${ts}-${c}-${k}-${counter}
-			fi
+			#if [[ $notify != 0 ]]; then
+			#	notify Failed-${h}-${ts}-${c}-${k}-${counter}
+			#fi
 			sleep 30s
 			mn -c
 			continue
@@ -69,10 +71,10 @@ for d in $direction; do
 		#do
 		#    echo "${arr_steps[$i]}, ${arr_counters[i]}" >> "${folder_name}/${ts}-${h}-${c}.counters"
 		#done
-		if [[ $notify != 0 ]]; then
-		        notify Success-${h}-${ts}-${c}-${k}-${counter}
-		fi
-	        sleep 30s
+		#if [[ $notify != 0 ]]; then
+		#        notify Success-${h}-${ts}-${c}-${k}-${counter}
+		#fi
+	    sleep 30s
 		mn -c
 	done
 	done
