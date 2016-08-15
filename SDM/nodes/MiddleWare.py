@@ -17,8 +17,8 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.ofproto import ofproto_v1_4
 from ryu.ofproto import ofproto_v1_5
 
-from SDM import Strategy
-
+from SDM.nodes.Strategy import Strategy
+from SDM.util import get_dirs, get_params
 
 class ProxyThread(Thread):
     def __init__(self, middleware, controller_ip, controller_port):

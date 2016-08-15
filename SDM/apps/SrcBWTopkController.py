@@ -3,7 +3,7 @@ from datetime import datetime
 
 from ryu.lib import hub
 
-from SDM import SrcBWPullingController
+from SDM.apps.SrcBWPullingController import SrcBWPullingController
 
 
 class SrcBWTopkController(SrcBWPullingController):

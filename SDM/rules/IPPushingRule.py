@@ -1,4 +1,4 @@
-from SDM import PushingRule
+from SDM.rules.PushingRule import PushingRule
 
 
 class IPPushingRule(PushingRule):

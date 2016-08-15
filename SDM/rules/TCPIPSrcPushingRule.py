@@ -1,4 +1,4 @@
-from SDM import IPSrcPushingRule
+from SDM.rules.IPSrcPushingRule import IPSrcPushingRule
 
 
 class TCPIPSrcPushingRule(IPSrcPushingRule):

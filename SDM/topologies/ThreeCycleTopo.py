@@ -1,6 +1,6 @@
 from mininet.topo import Topo
 
-from SDM import irange
+from SDM.util import irange
 
 BASE_MAC = '6a:bc:af:76:'
 

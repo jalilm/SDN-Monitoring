@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
 import os
-import sys
 
 import matplotlib.pyplot as plt
 
-
-def main(argv):
+def main():
     for i in range(0, 60):
         second = "%02d" % i
         os.system("cd " + os.path.expanduser('~/CAIDA-DLT/') + "sec" + second + "/")
@@ -38,4 +36,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

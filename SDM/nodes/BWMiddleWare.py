@@ -1,8 +1,8 @@
 import logging
 
-from SDM import IPDestPushingRule
-from SDM import MiddleWare
-from SDM import bytes_to_ipv4
+from SDM.rules.IPDestPushingRule import IPDestPushingRule
+from SDM.nodes.MiddleWare import MiddleWare
+from SDM.util import bytes_to_ipv4
 
 
 class BWMiddleWare(MiddleWare):
@@ -49,6 +49,7 @@ class BWMiddleWare(MiddleWare):
             self.logger.info('Error stat %s', stat)
             raise
 
+        # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
         self.logger.info('%34s %018.9f %018.09f %08d',
                          rule,
                          current_rate,
@@ -56,10 +57,8 @@ class BWMiddleWare(MiddleWare):
                          new_byte_count)
         self.handle_rule_stat(rule, current_rate)
 
-
     def create_rule(self, ip_addr, mask):
         return IPDestPushingRule(self.ovs_switch, self.datapath, ip_addr, mask, 1, 0, None, self.protocol_str)
-
 
     def handle_raw_msg(self, data):
         hex_data = ':'.join('{:02x}'.format(x) for x in data)
@@ -74,7 +73,6 @@ class BWMiddleWare(MiddleWare):
             return data
         else:
             return None
-
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def get_rule_threshold(self, rule):

@@ -1,8 +1,8 @@
 import logging
 
-from SDM import MiddleWare
-from SDM import SynDestPushingRule
-from SDM import bytes_to_ipv4
+from SDM.nodes.MiddleWare import MiddleWare
+from SDM.rules.SynDestPushingRule import SynDestPushingRule
+from SDM.util import bytes_to_ipv4
 
 
 class SynMiddleWare(MiddleWare):

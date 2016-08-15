@@ -1,8 +1,5 @@
-from SDM import IPPushingRule
-from SDM import get_index_of_least_sig_one
-from SDM import get_paired_ipv4
-from SDM import int_to_ipv4
-from SDM import ipv4_to_int
+from SDM.rules.IPPushingRule import IPPushingRule
+from SDM.util import get_index_of_least_sig_one, get_paired_ipv4, int_to_ipv4, ipv4_to_int
 
 
 class IPDestPushingRule(IPPushingRule):

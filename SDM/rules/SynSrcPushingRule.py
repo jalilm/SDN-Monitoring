@@ -1,6 +1,6 @@
-from SDM import FlagsSrcPushingRule
-from SDM import PushingRule
-from SDM import TCPIPSrcPushingRule
+from SDM.rules.FlagsSrcPushingRule import FlagsSrcPushingRule
+from SDM.rules.PushingRule import PushingRule
+from SDM.rules.TCPIPSrcPushingRule import TCPIPSrcPushingRule
 
 
 class SynSrcPushingRule(PushingRule):

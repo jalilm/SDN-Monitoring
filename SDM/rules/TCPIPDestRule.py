@@ -1,6 +1,6 @@
 from ryu.lib.packet.in_proto import IPPROTO_TCP
 
-from SDM import IPDestRule
+from SDM.rules.IPDestRule import IPDestRule
 
 
 class TCPIPDestRule(IPDestRule):

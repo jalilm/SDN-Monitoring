@@ -2,8 +2,8 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 
-from SDM import IPSrcRule
-from SDM import PullingController
+from SDM.rules.IPSrcRule import IPSrcRule
+from SDM.apps.PullingController import PullingController
 
 
 class SrcBWPullingController(PullingController):
@@ -57,6 +57,7 @@ class SrcBWPullingController(PullingController):
                     else:
                         current_rate = float("inf")
 
+                # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
                 self.info('%016x %46s %018.9f %018.09f %08d',
                           ev.msg.datapath.id,
                           rule,

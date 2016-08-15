@@ -1,7 +1,9 @@
 import logging
 import mmap
+import math
 
-from SDM import Strategy
+from SDM.nodes.Strategy import Strategy
+from SDM.util import get_dirs, get_params
 
 
 class TopkStrategy(Strategy):
@@ -14,6 +16,8 @@ class TopkStrategy(Strategy):
         self.alert = False
         self.frontier_default_value = {'duration': 0.0000000001, 'byte_count': 0}
         self.current_depth = int(math.log(self.counters, 2))
+        self.dirs = get_dirs()
+        self.parameters = get_params(self.dirs)
 
     def handle_rule(self, rule, current_stat):
         self.logger.debug('Handling Rule %s', rule)

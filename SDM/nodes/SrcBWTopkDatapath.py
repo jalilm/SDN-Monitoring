@@ -1,10 +1,12 @@
 import logging
 import math
 
-from SDM import Datapath
-from SDM import IPSrcRule
-from SDM import InPortRule
-from SDM import TopkStrategy
+from SDM.nodes.Datapath import Datapath
+from SDM.nodes.TopkStrategy import TopkStrategy
+from SDM.rules.IPSrcRule import IPSrcRule
+from SDM.rules.InPortRule import InPortRule
+
+from SDM.util import get_dirs, get_params, ipv4_partition, CIDR_mask_to_ipv4_subnet_mask, irange
 
 
 class SrcBWTopkDatapath(TopkStrategy, Datapath):
@@ -28,6 +30,7 @@ class SrcBWTopkDatapath(TopkStrategy, Datapath):
             rule = IPSrcRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
             self.add_monitoring_rule(rule)
 
+    # noinspection PyMethodMayBeStatic
     def calc_id(self):
         """
         This type does not need id calculation.

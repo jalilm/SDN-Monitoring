@@ -1,5 +1,7 @@
-from SDM import PullingDatapath
-from SDM import SynDestRule
+import logging
+from SDM.util import CIDR_mask_to_ipv4_subnet_mask
+from SDM.nodes.PullingDatapath import PullingDatapath
+from SDM.rules.SynDestRule import SynDestRule
 
 
 class SynPullingDatapath(PullingDatapath):

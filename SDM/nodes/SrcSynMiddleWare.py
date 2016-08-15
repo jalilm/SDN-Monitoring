@@ -1,7 +1,7 @@
 import logging
 
-from SDM import SynMiddleWare
-from SDM import SynSrcPushingRule
+from SDM.nodes.SynMiddleWare import SynMiddleWare
+from SDM.rules.SynSrcPushingRule import SynSrcPushingRule
 
 
 class SrcSynMiddleWare(SynMiddleWare):

@@ -3,8 +3,8 @@ import os
 import time
 from subprocess import Popen
 
-from SDM import BaseTest
-from SDM import irange
+from SDM.tests.BaseTest import BaseTest
+from SDM.util import irange
 
 
 class NormalTest(BaseTest):
@@ -12,8 +12,8 @@ class NormalTest(BaseTest):
     A class that runs the normal test.
     """
 
-    def __init__(self, shared_mem, directories, params):
-        super(NormalTest, self).__init__(shared_mem, directories, params)
+    def __init__(self, shared_mem, directories, parameters):
+        super(NormalTest, self).__init__(shared_mem, directories, parameters)
         self.logger = logging.getLogger(__name__)
 
     def clean_after_run(self):
@@ -24,7 +24,7 @@ class NormalTest(BaseTest):
         curr_dir = os.getcwd()
         os.chdir(self.directories['log'])
         Popen(self.directories['util'] + 'mergeLogs ' +
-              str(self.params['RunParameters']['numberOfStations']), shell=True)
+              str(self.parameters['RunParameters']['numberOfStations']), shell=True)
         os.chdir(curr_dir)
 
     def run(self):
@@ -40,23 +40,23 @@ class NormalTest(BaseTest):
         time.sleep(10)
 
         self.logger.debug("running MultiThreadServer on the hosts")
-        for i in irange(1, self.params['RunParameters']['numberOfStations']):
+        for i in irange(1, self.parameters['RunParameters']['numberOfStations']):
             hosti = self.net.get('h' + str(i))
             hosti.cmd(self.directories['src'] + 'scripts/MultiThreadServer.py ' +
                       str(i) + ' &')
 
         self.logger.debug("running MultiThreadClient on the hosts")
-        for i in irange(1, self.params['RunParameters']['numberOfStations']):
+        for i in irange(1, self.parameters['RunParameters']['numberOfStations']):
             hosti = self.net.get('h' + str(i))
             hosti.sendCmd(self.directories['src'] + 'scripts/MultiThreadClient.py ' +
                           str(i) + ' ' +
-                          str(self.params['RunParameters']['numberOfStations']))
+                          str(self.parameters['RunParameters']['numberOfStations']))
 
         self.logger.debug("waiting for the hosts")
-        for i in irange(1, self.params['RunParameters']['numberOfStations']):
+        for i in irange(1, self.parameters['RunParameters']['numberOfStations']):
             hosti = self.net.get('h' + str(i))
             hosti.waitOutput()
 
-        self.shared_mem_fd[0:] = self.params['General']['finishGenerationToken']
+        self.shared_mem_fd[0:] = self.parameters['General']['finishGenerationToken']
         self.logger.debug("stopping the net")
         self.net.stop()

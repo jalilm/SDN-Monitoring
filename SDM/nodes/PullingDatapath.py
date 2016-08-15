@@ -1,6 +1,8 @@
-from SDM import Datapath
-from SDM import InPortRule
-from SDM import Strategy
+import logging
+from SDM.nodes.Datapath import Datapath
+from SDM.nodes.Strategy import Strategy
+from SDM.rules.InPortRule import InPortRule
+from SDM.util import irange
 
 
 class PullingDatapath(Datapath, Strategy):
@@ -10,6 +12,7 @@ class PullingDatapath(Datapath, Strategy):
         self.logger = logging.getLogger(__name__)
         self.logger.info("PullingDatapath")
 
+    # noinspection PyMethodMayBeStatic
     def calc_id(self):
         """
         This type does not need id calculation.

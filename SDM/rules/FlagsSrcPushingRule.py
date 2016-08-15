@@ -1,4 +1,4 @@
-from SDM import TCPIPSrcPushingRule
+from SDM.rules.TCPIPSrcPushingRule import TCPIPSrcPushingRule
 
 
 class FlagsSrcPushingRule(TCPIPSrcPushingRule):

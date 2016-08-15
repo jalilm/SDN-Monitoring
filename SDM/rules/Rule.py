@@ -1,4 +1,4 @@
-from SDM import get_dirs, get_params
+from SDM.util import get_dirs, get_params
 
 class Rule(object):
     """

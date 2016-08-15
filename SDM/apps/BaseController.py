@@ -10,10 +10,6 @@ from ryu.lib.packet import ethernet
 from ryu.lib.packet import packet
 from ryu.ofproto import ofproto_v1_3
 
-from SDM import Rule
-from ryu.lib.packet import packet
-from ryu.ofproto import ofproto_v1_3
-
 from SDM.rules.Rule import Rule
 from SDM.util import *
 

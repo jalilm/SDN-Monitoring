@@ -4,8 +4,7 @@ import math
 import os
 from ConfigParser import RawConfigParser
 
-from SDM import create
-
+from SDM.scripts.CreateSeveralHH import create
 
 def ipv4_partition(k):
     """
@@ -177,7 +176,7 @@ def get_params(directories, fresh=False):
             f1 = ipv4_to_int
             f2 = int_to_ipv4
             params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
-            create(get_dirs(), params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
+            create(params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
             params['RunParameters']['topoType'] = "SDM.topologies.TraceTopo.TraceTopo"
             params['RunParameters']['ryuApps'] = directories['src'] + "apps/PushingController.py"
             params['RunParameters']['attack'] = directories['util'] + "several-attack"

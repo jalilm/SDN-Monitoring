@@ -6,7 +6,7 @@ import os
 
 from mininet.log import setLogLevel
 
-from SDM import get_dirs, get_params, get_class
+from SDM.util import get_dirs, get_params, get_class
 
 
 def main():

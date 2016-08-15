@@ -6,8 +6,8 @@ from time import sleep
 from mininet.net import Mininet
 from mininet.node import OVSSwitch, RemoteController
 
-from SDM import SysctlHost
-from SDM import get_class
+from SDM.nodes.SysctlHost import SysctlHost
+from SDM.util import get_class
 
 
 class BaseTest(object):
@@ -15,10 +15,10 @@ class BaseTest(object):
     Base class used to provide a test infrastructure for more complicated test.
     """
 
-    def __init__(self, shared_mem, directories, params):
+    def __init__(self, shared_mem, directories, parameters):
         self.shared_mem_fd = shared_mem
         self.directories = directories
-        self.parameters = params
+        self.parameters = parameters
         self.logger = logging.getLogger(__name__)
         self.topo = None
         self.net = None
@@ -79,8 +79,8 @@ class BaseTest(object):
         while str(self.shared_mem_fd[:6]) == start_token:
             sleep(time_step)
         if str(self.shared_mem_fd[:6]) == alert_token:
-            self.net.get('h1').stopWaiting()
-            self.net.get('h2').stopWaiting()
+            self.net.get('h1').stopwaiting()
+            self.net.get('h2').stopwaiting()
             self.net.stop()
 
     def clean_after_run(self):
@@ -102,5 +102,6 @@ class BaseTest(object):
         os.system("rm " + sdm_log_file)
 
 
+# noinspection PyUnusedLocal
 def run(self):
     assert False

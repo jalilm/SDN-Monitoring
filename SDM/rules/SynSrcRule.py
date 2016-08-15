@@ -1,6 +1,6 @@
-from SDM import FlagsSrcRule
-from SDM import Rule
-from SDM import TCPIPSrcRule
+from SDM.rules.FlagsSrcRule import FlagsSrcRule
+from SDM.rules.Rule import Rule
+from SDM.rules.TCPIPSrcRule import TCPIPSrcRule
 
 
 class SynSrcRule(Rule):

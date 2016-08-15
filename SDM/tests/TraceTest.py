@@ -2,8 +2,8 @@ import logging
 from datetime import datetime
 from time import sleep
 
-from SDM import BaseTest
-from SDM import RyuRemoteController
+from SDM.tests.BaseTest import BaseTest
+from SDM.nodes.RyuRemoteController import RyuRemoteController
 
 
 class TraceTest(BaseTest):
@@ -12,8 +12,8 @@ class TraceTest(BaseTest):
     sends previously captured traces.
     """
 
-    def __init__(self, shared_mem, directories, params):
-        super(TraceTest, self).__init__(shared_mem, directories, params)
+    def __init__(self, shared_mem, directories, parameters):
+        super(TraceTest, self).__init__(shared_mem, directories, parameters)
         self.logger = logging.getLogger(__name__)
 
     def setup_net(self):
@@ -21,8 +21,7 @@ class TraceTest(BaseTest):
         net = super(TraceTest, self).setup_net()
         net.addController(RyuRemoteController(name="c0", ip=self.parameters['General']['controllerIP'],
                                               port=self.parameters['General']['controllerPort'],
-                                              ryuArgs=["",
-                                                       self.parameters['RunParameters']['ryuApps']]))
+                                              ryuArgs=["", self.parameters['RunParameters']['ryuApps']]))
         return net
 
     def run(self):

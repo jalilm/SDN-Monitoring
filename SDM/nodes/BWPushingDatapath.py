@@ -1,6 +1,7 @@
-from SDM import IPDestRule
-from SDM import PushingDatapath
-
+import logging
+from SDM.rules.IPDestRule import IPDestRule
+from SDM.nodes.PushingDatapath import PushingDatapath
+from SDM.util import CIDR_mask_to_ipv4_subnet_mask
 
 class BWPushingDatapath(PushingDatapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
@@ -10,7 +11,6 @@ class BWPushingDatapath(PushingDatapath):
 
     def set_main_monitor_table(self):
         actions = []
-
         # In this part register the monitoring rules
         # For each rule, register the IP and subnet mask
         # and the created Match.

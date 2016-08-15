@@ -1,4 +1,4 @@
-from SDM import TCPIPDestPushingRule
+from SDM.rules.TCPIPDestPushingRule import TCPIPDestPushingRule
 
 
 class FlagsDestPushingRule(TCPIPDestPushingRule):

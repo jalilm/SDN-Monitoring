@@ -4,7 +4,7 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 
-from SDM import BaseController
+from SDM.apps.BaseController import BaseController
 
 class PushingController(BaseController):
     def __init__(self, *args, **kwargs):

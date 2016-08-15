@@ -1,4 +1,4 @@
-from SDM import TCPIPSrcRule
+from SDM.rules.TCPIPSrcRule import TCPIPSrcRule
 
 
 class FlagsSrcRule(TCPIPSrcRule):

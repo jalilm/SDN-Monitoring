@@ -1,7 +1,8 @@
 from time import time
-
-from SDM import Datapath
-from SDM import InPortRule
+import logging
+from SDM.util import irange
+from SDM.nodes.Datapath import Datapath
+from SDM.rules.InPortRule import InPortRule
 
 
 class PushingDatapath(Datapath):
@@ -14,6 +15,7 @@ class PushingDatapath(Datapath):
     def info(self, msg, *args, **kwargs):
         self.logger.info(str(time()) + " " + msg, *args, **kwargs)
 
+    # noinspection PyMethodMayBeStatic
     def calc_id(self):
         return 1
 
@@ -23,6 +25,7 @@ class PushingDatapath(Datapath):
             actions = [self.datapath.ofproto_parser.OFPActionOutput(3 - i)]
             rule.add_flow_and_goto_next_table(actions)
 
+    # noinspection PyMethodMayBeStatic
     def set_main_monitor_table(self):
         assert False
         # In this part register the monitoring rules

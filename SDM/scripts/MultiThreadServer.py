@@ -11,8 +11,8 @@ import socket
 import sys
 import time
 
-from SDM import MyThread
-from SDM import get_dirs, get_params
+from SDM.scripts.MyThread import MyThread
+from SDM.util import get_dirs, get_params
 
 
 class ServerThread(MyThread):

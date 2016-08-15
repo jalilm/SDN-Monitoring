@@ -1,6 +1,5 @@
 from ryu.ofproto import ether
-
-from SDM import Rule
+from SDM.rules.Rule import Rule
 
 
 class IPRule(Rule):

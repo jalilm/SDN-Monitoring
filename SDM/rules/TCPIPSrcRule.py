@@ -1,6 +1,6 @@
 from ryu.lib.packet.in_proto import IPPROTO_TCP
 
-from SDM import IPSrcRule
+from SDM.rules.IPSrcRule import IPSrcRule
 
 
 class TCPIPSrcRule(IPSrcRule):

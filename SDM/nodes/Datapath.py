@@ -1,13 +1,13 @@
 import re
 
-from SDM import IPDestRule
+from SDM.rules.IPDestRule import IPDestRule
 
 
 class Datapath(object):
     BASE_MAC = '6a:bc:af:76:'
 
     def __init__(self, datapath):
-        # The order he is important
+        # The order here is important
         self.datapath = datapath
         self.id = self.calc_id()
         self.mac_reg = re.compile(Datapath.BASE_MAC + '0(\d):(\d)(\d)')

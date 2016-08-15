@@ -1,6 +1,6 @@
-from SDM import FlagsDestPushingRule
-from SDM import PushingRule
-from SDM import TCPIPDestPushingRule
+from SDM.rules.FlagsDestPushingRule import FlagsDestPushingRule
+from SDM.rules.PushingRule import PushingRule
+from SDM.rules.TCPIPDestPushingRule import TCPIPDestPushingRule
 
 
 class SynDestPushingRule(PushingRule):

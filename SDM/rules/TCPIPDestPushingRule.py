@@ -1,4 +1,4 @@
-from SDM import IPDestPushingRule
+from SDM.rules.IPDestPushingRule import IPDestPushingRule
 
 
 class TCPIPDestPushingRule(IPDestPushingRule):

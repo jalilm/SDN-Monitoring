@@ -2,11 +2,10 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_5
-
-from SDM import FlagsDestRule
-from SDM import PullingController
-from SDM import SynDestRule
-from SDM import TCPIPDestRule
+from SDM.apps.PullingController import PullingController
+from SDM.rules.FlagsDestRule import FlagsDestRule
+from SDM.rules.SynDestRule import SynDestRule
+from SDM.rules.TCPIPDestRule import TCPIPDestRule
 
 
 class SynPullingController(PullingController):

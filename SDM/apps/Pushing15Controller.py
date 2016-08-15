@@ -1,6 +1,6 @@
 from ryu.ofproto import ofproto_v1_5
 
-from SDM import PushingController
+from SDM.apps.PushingController import PushingController
 
 
 class Pushing15Controller(PushingController):

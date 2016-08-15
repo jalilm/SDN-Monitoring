@@ -124,6 +124,7 @@ class Strategy(object):
         self.error("rule is not original")
         assert False
 
+    # noinspection PyMethodMayBeStatic
     def request_stats(self):
         assert False
 

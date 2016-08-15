@@ -2,7 +2,7 @@ import random
 
 from mininet.topo import Topo
 
-from SDM import irange
+from SDM.util import irange
 
 
 class RandomTreeTopo(Topo):

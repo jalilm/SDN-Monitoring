@@ -6,5 +6,5 @@ class SysctlHost(Node):
         super(SysctlHost, self).__init__(name, True, **params)
         self.cmd('sysctl -p')
 
-    def stopWaiting(self):
+    def stopwaiting(self):
         self.waiting = False

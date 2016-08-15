@@ -41,18 +41,18 @@ def create_packet(ip):
     os.system(command)
 
 
-def combine_packets(num, ips):
-    for ip in ips:
+def combine_packets(num, ip_list):
+    for ip in ip_list:
         if not os.path.isfile(expanduser("~") + "/SDN-Monitoring/tmp/tcp-" + ip + ".pcap"):
             create_packet(ip)
 
     if os.path.isfile(expanduser("~") + "/SDN-Monitoring/tmp/several.pcap"):
         os.system("rm " + expanduser("~") + "/SDN-Monitoring/tmp/several.pcap")
 
-    os.system("cp " + expanduser("~") + "/SDN-Monitoring/tmp/tcp-" + ips[0] + ".pcap " + expanduser(
+    os.system("cp " + expanduser("~") + "/SDN-Monitoring/tmp/tcp-" + ip_list[0] + ".pcap " + expanduser(
         "~") + "/SDN-Monitoring/tmp/several.pcap")
 
-    for ip in ips[1:]:
+    for ip in ip_list[1:]:
         os.system("mergecap -a -w " + expanduser("~") + "/SDN-Monitoring/tmp/x.pcap " + expanduser(
             "~") + "/SDN-Monitoring/tmp/several.pcap " + expanduser("~") + "/SDN-Monitoring/tmp/tcp-" + ip + ".pcap")
         os.system("mv " + expanduser("~") + "/SDN-Monitoring/tmp/x.pcap " + expanduser(

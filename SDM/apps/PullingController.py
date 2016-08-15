@@ -2,7 +2,7 @@ from datetime import datetime
 
 from ryu.lib import hub
 
-from SDM import BaseController
+from SDM.apps.BaseController import BaseController
 
 
 class PullingController(BaseController):
