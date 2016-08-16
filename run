@@ -5,15 +5,15 @@ timestamp() {
 }
 
 #notify=1
-state="Pulling" #Pulling Pushing"
-time_step="0.25" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
-rate="BW" #HH-several Syn BW"
-direction="Destination" #Source Destination"
+state="Topk" #Pulling Pushing"
+time_step="20.0" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
+rate="BW" #normal IncreasingBW DecreasingBW IncDecBW HH-several Syn BW"
+direction="Source" #Source Destination"
 numHH="1" #5 6 7 8 9 10 11 12"
 mechanism="table" #prio:"
 common_mask="24" #0 8 16 24 30"
 ks="2 5 10 15 20"
-counters="1024" #16 32 64 128 256 512"
+counters="1024" #16 32 64 128 256 512 1024"
 
 cd ~/SDN-Monitoring/
 for m in $mechanism; do
@@ -32,10 +32,6 @@ for d in $direction; do
 	for c in $common_mask; do
 	for k in $ks; do
 	for counter in $counters; do
-		log_file="${folder_name}/${ts}-${h}-${c}.log"
-		pcap_file="${folder_name}/${ts}-${h}-${c}.pcap"
-		python ./SDM/scripts/ChangeConfig.py ${s} ${r} ${ts} ${d} ${h} ${m} ${c}
-		tshark -i lo -w "${pcap_file}" &
 		log_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.log"
 		pcap_file="${folder_name}/${ts}-${h}-${c}-${k}-${counter}.pcap"
 		python ./SDM/scripts/ChangeConfig.py --state=${s} --rate_type=${r} --timestep=${ts} --direction=${d} --numHH=${h} --mechanism=${m} --common_mask=${c} --k=${k} --counters=${counter}

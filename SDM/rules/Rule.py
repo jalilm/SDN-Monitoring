@@ -1,5 +1,6 @@
 from SDM.util import get_dirs, get_params
 
+
 class Rule(object):
     """
     A class that represents a rule in the switch table.

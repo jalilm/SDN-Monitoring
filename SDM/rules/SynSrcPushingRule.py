@@ -14,9 +14,9 @@ class SynSrcPushingRule(PushingRule):
         self.ipv4_string = ipv4_string
         self.subnet_string = subnet_string
         self.tcp_rule = TCPIPSrcPushingRule(switch, datapath, ipv4_string, subnet_string, table_id, priority, None,
-                                             protocol)
+                                            protocol)
         self.syn_rule = FlagsSrcPushingRule(switch, datapath, ipv4_string, subnet_string, table_id, priority + 1, 0x02,
-                                             None, protocol)
+                                            None, protocol)
         self.match_args = self.tcp_rule.match_args
         self.match = self.tcp_rule.match
 
@@ -27,8 +27,8 @@ class SynSrcPushingRule(PushingRule):
                repr(self.syn_rule.match_args['tcp_flags']) + ")"
 
     def __str__(self):
-        return "SynSrcPushingRule ({self.tcp_rule.ipv4_string}, {self.tcp_rule.subnet_string}) Flags:{self.syn_rule.match_args[tcp_flags]}".format(
-            self=self)
+        return "SynSrcPushingRule ({self.tcp_rule.ipv4_string}, {self.tcp_rule.subnet_string}) " \
+               "Flags:{self.syn_rule.match_args[tcp_flags]}".format(self=self)
 
     def get_finer_rules(self):
         rules = []
@@ -57,8 +57,8 @@ class SynSrcPushingRule(PushingRule):
     # noinspection PyPep8Naming
     @classmethod
     def from_sub_rules(cls, tcp_rule, syn_rule, father_rule):
-        r = cls(tcp_rule.switch, tcp_rule.datapath, tcp_rule.ipv4_string, tcp_rule.subnet_string, tcp_rule.table_id, tcp_rule.priority,
-                father_rule, tcp_rule.protocol)
+        r = cls(tcp_rule.switch, tcp_rule.datapath, tcp_rule.ipv4_string, tcp_rule.subnet_string, tcp_rule.table_id,
+                tcp_rule.priority, father_rule, tcp_rule.protocol)
         r.tcp_rule = tcp_rule
         r.syn_rule = syn_rule
         return r

@@ -29,5 +29,5 @@ class MyThread(Thread):
         writes msg to the thread's file.
         """
         with open(self.thread_file, 'a') as log_file:
-            log_file.write(str(time.time()) + ' ' + str(self.name) + \
+            log_file.write(str(time.time()) + ' ' + str(self.name) +
                            ': ' + str(msg) + '\n')

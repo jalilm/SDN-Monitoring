@@ -1,2 +1,2 @@
 # !/bin/bash
-tcpreplay -M 0.95625 -i h1-eth0 /home/vagrant/CAIDA-DLT/sec14/sec14.pcap
+tcpreplay -M 0.263793103448 -i h1-eth0 /home/jalil/SDN-Monitoring/CAIDA-DLT/sec50/sec50.pcap

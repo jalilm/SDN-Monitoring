@@ -42,12 +42,12 @@ class IPDestPushingRule(IPPushingRule):
         # TODO: table <-> prio change required.
         if self.params['RunParameters']['mechanism'] == "table":
             rule = IPDestPushingRule(self.switch, self.datapath, self.ipv4_string, new_subnet_mask, self.table_id + 1,
-                                self.priority,
-                                self, self.protocol)
+                                     self.priority,
+                                     self, self.protocol)
         elif self.params['RunParameters']['mechanism'] == "prio":
             rule = IPDestPushingRule(self.switch, self.datapath, self.ipv4_string, new_subnet_mask, self.table_id,
-                                 self.priority + 2,
-                                 self, self.protocol)
+                                     self.priority + 2,
+                                     self, self.protocol)
         else:
             assert False
         rules.append(rule)

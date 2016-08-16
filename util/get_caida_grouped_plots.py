@@ -16,8 +16,8 @@ def main():
         for c in range(0, 33):
             cidr = "%02d" % c
             cidr_strings.append("/" + str(c))
-            os.system("cat ./sec" + second + "-groupedBy-" + cidr + "CIDR.stat" \
-                      + " | cut -d\" \" -f2 > ./tmp" + second + "s" + cidr + "c")
+            os.system("cat ./sec" + second + "-groupedBy-" + cidr + "CIDR.stat" +
+                      " | cut -d\" \" -f2 > ./tmp" + second + "s" + cidr + "c")
             with open("./tmp" + second + "s" + cidr + "c", 'r') as f:
                 bps = f.readlines()[:k]
                 diff.append((int(bps[0]) - int(bps[-1:][0])) / len(bps))

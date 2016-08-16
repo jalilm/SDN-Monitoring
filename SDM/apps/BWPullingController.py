@@ -10,6 +10,7 @@ class BWPullingController(PullingController):
     def __init__(self, *args, **kwargs):
         super(BWPullingController, self).__init__(*args, **kwargs)
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def flow_stats_reply_handler(self, ev):
         with self.res_lock:
@@ -42,7 +43,8 @@ class BWPullingController(PullingController):
                                    main_datapath.frontier_values[rule]['duration']
                     current_rate = new_byte_count / new_duration
                     main_datapath.frontier_values[rule] = {
-                    'duration': stat.duration_sec + (stat.duration_nsec / 1000000000.0), 'byte_count': stat.byte_count}
+                        'duration': stat.duration_sec + (stat.duration_nsec / 1000000000.0),
+                        'byte_count': stat.byte_count}
                 except ZeroDivisionError:
                     if stat.byte_count == 0:
                         self.info('%016x %34s %018.9f %018.9f %08d',
@@ -68,4 +70,4 @@ class BWPullingController(PullingController):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def get_rule_threshold(self, rule):
-        return 1500000/(self.parameters['RunParameters']['numHH']/1.0)
+        return 1500000 / (self.parameters['RunParameters']['numHH'] / 1.0)

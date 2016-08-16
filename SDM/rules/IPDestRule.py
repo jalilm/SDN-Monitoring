@@ -39,11 +39,11 @@ class IPDestRule(IPRule):
         new_subnet_mask = int_to_ipv4(self.subnet_int ^ xor_mask)
         # TODO: table <-> prio change required.
         if self.params['RunParameters']['mechanism'] == "table":
-            rule = IPDestRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id+1, self.priority,
-                          self)
+            rule = IPDestRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id + 1, self.priority,
+                              self)
         elif self.params['RunParameters']['mechanism'] == "prio":
             rule = IPDestRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id, self.priority + 2,
-                          self)
+                              self)
         else:
             assert False
         rules.append(rule)

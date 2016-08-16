@@ -10,7 +10,7 @@ class InPortRule(Rule):
         super(InPortRule, self).__init__(datapath, table_id, priority)
         self.in_port = in_port
         self.eth_dst = eth_dst
-        if None == self.eth_dst:
+        if self.eth_dst is None:
             new_match = self.datapath.ofproto_parser.OFPMatch(in_port=in_port)
         else:
             new_match = self.datapath.ofproto_parser.OFPMatch(in_port=in_port, eth_dst=eth_dst)

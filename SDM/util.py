@@ -6,16 +6,17 @@ from ConfigParser import RawConfigParser
 
 from SDM.scripts.CreateSeveralHH import create
 
+
 def ipv4_partition(k):
     """
     partitions the ipv4 address space into k disjoint partitions.
     :param k: the number of partitions.
     :return: a dictionary contains strings of the partitions.
     """
-    assert math.log(k,2)%1 == 0
+    assert math.log(k, 2) % 1 == 0
     ips = []
     for j in range(0, k):
-        ip_int = j*pow(2,32-int(math.log(k,2)))
+        ip_int = j * pow(2, 32 - int(math.log(k, 2)))
         ips.append(int_to_ipv4(ip_int))
     return ips
 
@@ -35,16 +36,17 @@ def int_to_ipv4(ip):
     """
     return ".".join(map(lambda n: str(ip >> n & 0xFF), [24, 16, 8, 0]))
 
+
 def get_dirs(fresh=False):
     """
     returns a dict that contains absolute paths to the project
     directories.
     If fresh=True, the dict is regenerated.
     """
-    if fresh == False and "dirs" in get_dirs.__dict__:
+    if not fresh and "dirs" in get_dirs.__dict__:
         return get_dirs.dirs
 
-    home_path = os.path.expanduser('~/')
+    home_path = os.path.expanduser('~/') + 'SDN-Monitoring/'
 
     get_dirs.dirs = {
         'home': home_path,
@@ -64,7 +66,7 @@ def get_params(directories, fresh=False):
     in ${PROJ_PATH}\\config\\parameters.cfg.
     If fresh=True, the dist is regenerated.
     """
-    if fresh == False and "params" in get_params.__dict__:
+    if not fresh and "params" in get_params.__dict__:
         return get_params.params
 
     config = RawConfigParser()
@@ -90,7 +92,7 @@ def get_params(directories, fresh=False):
     params['RunParameters']['interact'] = config.getboolean('RunParameters', 'interact')
     params['RunParameters']['numHH'] = 1
     params['RunParameters']['mechanism'] = config.get('RunParameters',
-                                                     'mechanism')
+                                                      'mechanism')
     params['RunParameters']['common_mask'] = config.getint('RunParameters', 'common_mask')
     params['RunParameters']['before_attack'] = directories['util'] + "before_trace"
     params['RunParameters']['after_attack'] = directories['util'] + "after_trace"
@@ -237,6 +239,7 @@ def irange(start, end):
     Credit: Mininet's util library.
     """
     return range(start, end + 1)
+
 
 def bytes_to_ipv4(ip):
     int_ip = sum(ord(c) << (i * 8) for i, c in enumerate(ip[::-1]))

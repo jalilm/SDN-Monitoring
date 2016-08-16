@@ -30,8 +30,8 @@ class IPSrcPushingRule(IPPushingRule):
 
     def get_paired_rule(self):
         return IPSrcPushingRule(self.switch, self.datapath, get_paired_ipv4(self.ipv4_string, self.subnet_string),
-                                 self.subnet_string,
-                                 self.table_id, self.priority, self.father_rule, self.protocol)
+                                self.subnet_string,
+                                self.table_id, self.priority, self.father_rule, self.protocol)
 
     def get_finer_rules(self):
         rules = []
@@ -42,12 +42,12 @@ class IPSrcPushingRule(IPPushingRule):
         # TODO: table <-> prio change required.
         if self.params['RunParameters']['mechanism'] == "table":
             rule = IPSrcPushingRule(self.switch, self.datapath, self.ipv4_string, new_subnet_mask, self.table_id + 1,
-                                self.priority,
-                                self, self.protocol)
+                                    self.priority,
+                                    self, self.protocol)
         elif self.params['RunParameters']['mechanism'] == "prio":
             rule = IPSrcPushingRule(self.switch, self.datapath, self.ipv4_string, new_subnet_mask, self.table_id,
-                                 self.priority + 2,
-                                 self, self.protocol)
+                                    self.priority + 2,
+                                    self, self.protocol)
         else:
             assert False
         rules.append(rule)

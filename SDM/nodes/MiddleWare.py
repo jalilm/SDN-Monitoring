@@ -20,6 +20,7 @@ from ryu.ofproto import ofproto_v1_5
 from SDM.nodes.Strategy import Strategy
 from SDM.util import get_dirs, get_params
 
+
 class ProxyThread(Thread):
     def __init__(self, middleware, controller_ip, controller_port):
         super(ProxyThread, self).__init__()
@@ -208,9 +209,9 @@ class MiddleWare(Strategy):
         self.fromSwitchProxy.stop()
         self.monitor_thread.stop()
         with open(self.params['General']['sharedMemFilePath'], "r+b") as _file:
-                mem_map = mmap.mmap(_file.fileno(), 0)
-                mem_map[:6] = self.params['General']['alertToken']
-                mem_map.close()
+            mem_map = mmap.mmap(_file.fileno(), 0)
+            mem_map[:6] = self.params['General']['alertToken']
+            mem_map.close()
 
     def add_monitoring_rule(self, rule):
         super(MiddleWare, self).add_monitoring_rule(rule)

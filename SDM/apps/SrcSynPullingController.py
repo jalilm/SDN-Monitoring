@@ -15,6 +15,7 @@ class SrcSynPullingController(PullingController):
     def __init__(self, *args, **kwargs):
         super(SrcSynPullingController, self).__init__(*args, **kwargs)
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def flow_stats_reply_handler(self, ev):
         with self.res_lock:

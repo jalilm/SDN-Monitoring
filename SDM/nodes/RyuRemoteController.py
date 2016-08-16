@@ -14,13 +14,13 @@ class RyuRemoteController(Controller):
             if not ryuArgs:
                 error('error: no Ryu modules specified\n')
                 return
-        elif type(ryuArgs) not in ( list, tuple ):
+        elif type(ryuArgs) not in (list, tuple):
             ryuArgs = [ryuArgs]
 
         super(RyuRemoteController, self).__init__(name=name,
                                                   command='ryu-manager',
-                                                  cargs='--ofp-listen-host ' + ip + \
-                                                        ' --ofp-tcp-listen-port %s' + \
+                                                  cargs='--ofp-listen-host ' + ip +
+                                                        ' --ofp-tcp-listen-port %s' +
                                                         ' --app-lists '.join(ryuArgs),
                                                   ip=ip,
                                                   port=port,

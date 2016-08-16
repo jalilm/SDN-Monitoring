@@ -6,11 +6,13 @@ from ryu.controller.handler import set_ev_cls
 
 from SDM.apps.BaseController import BaseController
 
+
 class PushingController(BaseController):
     def __init__(self, *args, **kwargs):
         super(PushingController, self).__init__(*args, **kwargs)
         self.alerts = []
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPExperimenter, MAIN_DISPATCHER)
     def alert_handler(self, ev):
         msg = ev.msg

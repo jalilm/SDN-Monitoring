@@ -3,6 +3,7 @@ from SDM.rules.IPDestRule import IPDestRule
 from SDM.nodes.PushingDatapath import PushingDatapath
 from SDM.util import CIDR_mask_to_ipv4_subnet_mask
 
+
 class BWPushingDatapath(PushingDatapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         super(BWPushingDatapath, self).__init__(datapath, first_monitoring_table_id)

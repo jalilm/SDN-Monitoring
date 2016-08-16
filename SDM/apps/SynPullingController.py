@@ -14,6 +14,7 @@ class SynPullingController(PullingController):
     def __init__(self, *args, **kwargs):
         super(SynPullingController, self).__init__(*args, **kwargs)
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def flow_stats_reply_handler(self, ev):
         with self.res_lock:
@@ -47,7 +48,8 @@ class SynPullingController(PullingController):
                 # in table implementation, we query different table so there will never be redundant stats that were
                 # not deleted.
                 if self.parameters['RunParameters']['mechanism'] == "prio":
-                    if (ipv4_string, subnet_string) not in [(r.ipv4_string, r.subnet_string) for r in main_datapath.frontier]:
+                    if (ipv4_string, subnet_string) not in [(r.ipv4_string, r.subnet_string) for r in
+                                                            main_datapath.frontier]:
                         continue
 
                 try:

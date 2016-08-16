@@ -4,6 +4,7 @@ import os
 
 import matplotlib.pyplot as plt
 
+
 def main():
     for i in range(0, 60):
         second = "%02d" % i

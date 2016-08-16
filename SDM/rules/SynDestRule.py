@@ -25,8 +25,8 @@ class SynDestRule(Rule):
                repr(self.syn_rule.match_args['tcp_flags']) + ")"
 
     def __str__(self):
-        return "SynDestRule ({self.tcp_rule.ipv4_string}, {self.tcp_rule.subnet_string}) Flags:{self.syn_rule.match_args[tcp_flags]}".format(
-            self=self)
+        return "SynDestRule ({self.tcp_rule.ipv4_string}, {self.tcp_rule.subnet_string}) " \
+               "Flags:{self.syn_rule.match_args[tcp_flags]}".format(self=self)
 
     def get_finer_rules(self):
         rules = []

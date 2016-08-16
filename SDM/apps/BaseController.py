@@ -36,6 +36,7 @@ class BaseController(app_manager.RyuApp):
     def error(self, msg, *args, **kwargs):
         self.logger.error('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         datapath = ev.msg.datapath
@@ -46,6 +47,7 @@ class BaseController(app_manager.RyuApp):
         rule = Rule(datapath, 0, 0)
         rule.add_flow_and_apply_actions(actions)
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPPortDescStatsReply, CONFIG_DISPATCHER)
     def multipart_reply_handler(self, ev):
         datapath = ev.msg.datapath
@@ -61,7 +63,7 @@ class BaseController(app_manager.RyuApp):
     def after_datapaths_construction(self):
         pass
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal,PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def flow_stats_reply_handler(self, ev):
         assert False
@@ -88,6 +90,7 @@ class BaseController(app_manager.RyuApp):
     def get_rule_threshold(self, rule):
         assert False
 
+    # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
         dpid = ev.msg.datapath.id

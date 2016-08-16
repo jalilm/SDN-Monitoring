@@ -22,7 +22,7 @@ class DoubleKTest(TraceTest):
     def prepare_before_run(self):
         super(DoubleKTest, self).prepare_before_run()
         minimal_length_of_trace = self.parameters['RunParameters']['timeStep'] * (
-        32 - math.log(self.parameters['RunParameters']['counters'], 2))
+            32 - math.log(self.parameters['RunParameters']['counters'], 2))
         trace_rate = 153 / (2 * self.parameters['RunParameters']['timeStep'] + minimal_length_of_trace +
                             5 * self.parameters['RunParameters']['timeStep'])
         self.random_second = "%02d" % randint(0, 59)
@@ -38,15 +38,15 @@ class DoubleKTest(TraceTest):
     def clean_after_run(self):
         super(DoubleKTest, self).clean_after_run()
         output_log_file = self.directories['log'] + self.parameters['RunParameters']['mechanism'] + '-' + \
-                          self.parameters['RunParameters']['state'] + '-' + \
-                          self.parameters['RunParameters']['rate_type'] + '-' + \
-                          self.parameters['RunParameters']['direction'] + '/' + \
-                          str(self.parameters['RunParameters']['timeStep']) + '-' + \
-                          str(self.parameters['RunParameters']['numHH']) + '-' + \
-                          str(self.parameters['RunParameters']['common_mask']) + '-' + \
-                          str(self.parameters['RunParameters']['k']) + '-' + \
-                          str(self.parameters['RunParameters']['counters']) + \
-                          '.log'
+                           self.parameters['RunParameters']['state'] + '-' + \
+                           self.parameters['RunParameters']['rate_type'] + '-' + \
+                           self.parameters['RunParameters']['direction'] + '/' + \
+                           str(self.parameters['RunParameters']['timeStep']) + '-' + \
+                           str(self.parameters['RunParameters']['numHH']) + '-' + \
+                           str(self.parameters['RunParameters']['common_mask']) + '-' + \
+                           str(self.parameters['RunParameters']['k']) + '-' + \
+                           str(self.parameters['RunParameters']['counters']) + \
+                           '.log'
         found_top_k_file = self.directories['log'] + self.parameters['RunParameters']['mechanism'] + '-' + \
                            self.parameters['RunParameters']['state'] + '-' + \
                            self.parameters['RunParameters']['rate_type'] + '-' + \
@@ -60,11 +60,11 @@ class DoubleKTest(TraceTest):
                           self.parameters['RunParameters']['direction'] + '/true_top' + \
                           str(self.parameters['RunParameters']['k'])
 
-        os.system("cat " + output_log_file + " | grep \"Final Top\" | cut -d\" \" -f4 | head -n " + \
+        os.system("cat " + output_log_file + " | grep \"Final Top\" | cut -d\" \" -f4 | head -n " +
                   str(self.parameters['RunParameters']['k']) + " | sort > " + found_top_k_file)
 
-        os.system("cat " + self.directories['home'] + 'CAIDA-DLT/sec' + str(self.random_second) + "/sec" + \
-                  str(self.random_second) + ".stat" + " | head -n " + str(self.parameters['RunParameters']['k']) + \
+        os.system("cat " + self.directories['home'] + 'CAIDA-DLT/sec' + str(self.random_second) + "/sec" +
+                  str(self.random_second) + ".stat" + " | head -n " + str(self.parameters['RunParameters']['k']) +
                   " | cut -d\" \" -f1 | sort > " + true_top_k_file)
         res_file = self.directories['log'] + self.parameters['RunParameters']['mechanism'] + '-' + \
                    self.parameters['RunParameters']['state'] + '-' + \
@@ -73,6 +73,6 @@ class DoubleKTest(TraceTest):
                    str(self.parameters['RunParameters']['timeStep']) + '-' + \
                    str(self.parameters['RunParameters']['numHH']) + '-' + \
                    str(self.parameters['RunParameters']['common_mask'])
-        os.system("echo -n " + str(self.parameters['RunParameters']['k']) + " " + \
+        os.system("echo -n " + str(self.parameters['RunParameters']['k']) + " " +
                   str(self.parameters['RunParameters']['counters']) + ": " + " >> " + res_file)
         os.system("comm -12 " + found_top_k_file + " " + true_top_k_file + " | wc -l >> " + res_file)

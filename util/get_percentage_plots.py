@@ -10,8 +10,8 @@ def main():
     res_per_k = {}
     for fn in glob.glob(os.path.expanduser('~/logs/') + '*-Topk-*'):
         if os.path.isfile(fn):
-            #bfn = os.path.basename(fn)
-            #mechanism, topk, rate, directory, timestep, hh, cm = bfn.split('-')
+            # bfn = os.path.basename(fn)
+            # mechanism, topk, rate, directory, timestep, hh, cm = bfn.split('-')
             with open(fn, "r") as f:
                 f_res = f.readlines()
                 for l in f_res:
