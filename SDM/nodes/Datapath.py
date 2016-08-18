@@ -1,3 +1,4 @@
+import logging
 import re
 
 from SDM.rules.IPDestRule import IPDestRule
@@ -7,6 +8,7 @@ class Datapath(object):
     BASE_MAC = '6a:bc:af:76:'
 
     def __init__(self, datapath):
+        self.logger = logging.getLogger()
         # The order here is important
         self.datapath = datapath
         self.id = self.calc_id()

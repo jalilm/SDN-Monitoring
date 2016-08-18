@@ -5,6 +5,7 @@ from ryu.lib import hub
 from SDM.apps.BaseController import BaseController
 
 
+# noinspection PyAbstractClass
 class PullingController(BaseController):
     def __init__(self, *args, **kwargs):
         super(PullingController, self).__init__(*args, **kwargs)
@@ -20,7 +21,7 @@ class PullingController(BaseController):
         while True:
             hub.sleep(self.parameters['RunParameters']['timeStep'])
             time_step_number += 1
-            self.info('')
-            self.info('Time step #%d - ' + datetime.now().strftime('%H:%M:%S.%f'), time_step_number)
-            self.info('Sending stats request: %016x', datapath.id)
+            self.logger.info('')
+            self.logger.info('Time step #%d - ' + datetime.now().strftime('%H:%M:%S.%f'), time_step_number)
+            self.logger.info('Sending stats request: %016x', datapath.id)
             datapath.request_stats()

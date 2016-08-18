@@ -1,4 +1,3 @@
-import logging
 from SDM.rules.IPDestRule import IPDestRule
 from SDM.nodes.PullingDatapath import PullingDatapath
 from SDM.util import CIDR_mask_to_ipv4_subnet_mask
@@ -8,7 +7,6 @@ class BWPullingDatapath(PullingDatapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         super(BWPullingDatapath, self).__init__(datapath, first_monitoring_table_id)
         self.frontier_default_value = {'duration': 0.0, 'byte_count': 0}
-        self.logger = logging.getLogger(__name__)
         self.logger.info("BWPullingDatapath")
 
         # In this part register the monitoring rules

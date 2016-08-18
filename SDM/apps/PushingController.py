@@ -7,6 +7,7 @@ from ryu.controller.handler import set_ev_cls
 from SDM.apps.BaseController import BaseController
 
 
+# noinspection PyAbstractClass
 class PushingController(BaseController):
     def __init__(self, *args, **kwargs):
         super(PushingController, self).__init__(*args, **kwargs)
@@ -18,7 +19,7 @@ class PushingController(BaseController):
         msg = ev.msg
         if str(msg.data) in self.alerts:
             return
-        self.info('Alert Received: %s', msg.data)
+        self.logger.info('Alert Received: %s', msg.data)
         self.alerts.append(str(msg.data))
         if len(self.alerts) == self.parameters['RunParameters']['numHH']:
             with open(self.parameters['General']['sharedMemFilePath'], "r+b") as _file:

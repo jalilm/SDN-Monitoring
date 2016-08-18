@@ -6,14 +6,14 @@ timestamp() {
 
 #notify=1
 state="Topk" #Pulling Pushing"
-time_step="20.0" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
-rate="BW" #normal IncreasingBW DecreasingBW IncDecBW HH-several Syn BW"
+time_step="30.0" #0.001 0.01 0.05 0.1 0.25 0.5 0.75 0.9 0.95 1.0 2.0 3.0 4.0 5.0 10.0 15.0 20.0"
+rate="InnerEpoch" #normal IncreasingBW DecreasingBW IncDecBW HH-several Syn BW"
 direction="Source" #Source Destination"
 numHH="1" #5 6 7 8 9 10 11 12"
 mechanism="table" #prio:"
 common_mask="24" #0 8 16 24 30"
-ks="2 5 10 15 20"
-counters="1024" #16 32 64 128 256 512 1024"
+ks="1" #2 5 10 15 20"
+counters="2" #16 32 64 128 256 512 1024"
 
 cd ~/SDN-Monitoring/
 for m in $mechanism; do
@@ -53,11 +53,11 @@ for d in $direction; do
 		# TODO: Consider moving to after_test
 		#counters=`grep Maximal ${log_file} | rev | cut -d":" -f1 | rev`
 		#attack_start=`sed -n -e '/Attack started/,/Time step #/ p' ${log_file} | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
-	    #alert_step=`tac ${log_file} | sed -n -e '/Alert/,/Time step #/ p' | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
-	    #let steps=${alert_step}-${attack_start}
-	    #time=`echo ${steps}*${ts} | bc`
-	    #ofp_packets=`sudo tshark -2 -r ${pcap_file} -R "(openflow||openflow_v1||openflow_v4||openflow_v5) && ((tcp.srcport==6633) || (tcp.dstport==6633))" | wc -l`
-	    #echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${c},${counters} >> "logs/${m}-${s}-${r}-${d}.res"
+		#alert_step=`tac ${log_file} | sed -n -e '/Alert/,/Time step #/ p' | tail -1 | cut -d"#" -f2 | cut -d" " -f1`
+		#let steps=${alert_step}-${attack_start}
+		#time=`echo ${steps}*${ts} | bc`
+		#ofp_packets=`sudo tshark -2 -r ${pcap_file} -R "(openflow||openflow_v1||openflow_v4||openflow_v5) && ((tcp.srcport==6633) || (tcp.dstport==6633))" | wc -l`
+		#echo ${time_stamp}: ${ts},${attack_start},${alert_step},${steps},${time},${ofp_packets},${h},${c},${counters} >> "logs/${m}-${s}-${r}-${d}.res"
 		#all_counters=`grep "counters" ${log_file} | cut -d":" -f3`
 		#arr_counters=($all_counters)
 		#all_steps=`grep "step" ${log_file} | cut -d"#" -f2 | cut -d" " -f1`
@@ -70,7 +70,7 @@ for d in $direction; do
 		#if [[ $notify != 0 ]]; then
 		#        notify Success-${h}-${ts}-${c}-${k}-${counter}
 		#fi
-	    sleep 30s
+		sleep 30s
 		mn -c
 	done
 	done

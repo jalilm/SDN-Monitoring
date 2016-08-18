@@ -1,17 +1,15 @@
-import logging
-
 from SDM.rules.IPDestPushingRule import IPDestPushingRule
 from SDM.nodes.MiddleWare import MiddleWare
 from SDM.util import bytes_to_ipv4
 
 
+# noinspection PyAbstractClass
 class BWMiddleWare(MiddleWare):
     def __init__(self, ovs_switch, controller_ip="127.0.0.1", switch_ip=None, controller_port=6633, switch_port=None,
                  protocols=None):
         super(BWMiddleWare, self).__init__(ovs_switch, controller_ip, switch_ip, controller_port, switch_port,
                                            protocols)
         self.frontier_default_value = {'duration': 0.0, 'byte_count': 0}
-        self.logger = logging.getLogger(__name__)
         self.logger.info("Created BWMiddleWare")
 
     def handle_results(self, res, rule):
@@ -57,19 +55,19 @@ class BWMiddleWare(MiddleWare):
                          new_byte_count)
         self.handle_rule_stat(rule, current_rate)
 
-    def create_rule(self, ip_addr, mask):
-        return IPDestPushingRule(self.ovs_switch, self.datapath, ip_addr, mask, 1, 0, None, self.protocol_str)
+    def create_rule(self, ip_address, mask):
+        return IPDestPushingRule(self.ovs_switch, self.datapath, ip_address, mask, 1, 0, None, self.protocol_str)
 
     def handle_raw_msg(self, data):
         hex_data = ':'.join('{:02x}'.format(x) for x in data)
         if len(data) != 0:
             if hex_data.split(":")[1] == "0e" and hex_data.split(":")[24] == "01":
-                ip_addr = bytes_to_ipv4(str(data[62:66]))
+                ip_address = bytes_to_ipv4(str(data[62:66]))
                 mask = bytes_to_ipv4(str(data[66:70]))
                 self.logger.debug("ip_bytes %s | mask_bytes %s", ':'.join('{:02x}'.format(x) for x in data[62:66]),
                                   ':'.join('{:02x}'.format(x) for x in data[66:70]))
-                self.logger.debug("Monitoring %s:%s", ip_addr, mask)
-                self.monitor(ip_addr, mask)
+                self.logger.debug("Monitoring %s:%s", ip_address, mask)
+                self.monitor(ip_address, mask)
             return data
         else:
             return None

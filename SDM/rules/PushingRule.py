@@ -1,5 +1,3 @@
-import logging
-
 from SDM.rules.Rule import Rule
 
 
@@ -10,7 +8,6 @@ class PushingRule(Rule):
 
     def __init__(self, switch, datapath, table_id=0, priority=0, father_rule=None, protocol="OpenFlow13"):
         super(PushingRule, self).__init__(datapath, table_id, priority, father_rule)
-        self.logger = logging.getLogger(__name__)
         self.logger.debug("Created PushingRule")
         self.switch = switch
         self.match_args["priority"] = self.priority

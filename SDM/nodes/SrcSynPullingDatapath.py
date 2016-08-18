@@ -1,4 +1,3 @@
-import logging
 from SDM.nodes.PullingDatapath import PullingDatapath
 from SDM.rules.SynSrcRule import SynSrcRule
 from SDM.util import CIDR_mask_to_ipv4_subnet_mask
@@ -8,7 +7,6 @@ class SrcSynPullingDatapath(PullingDatapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         super(SrcSynPullingDatapath, self).__init__(datapath, first_monitoring_table_id)
         self.frontier_default_value = {'tcp_packets': 0, 'syn_packets': 0}
-        self.logger = logging.getLogger(__name__)
         self.logger.info("SrcSynPullingDatapath")
 
         # In this part register the monitoring rules

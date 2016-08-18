@@ -5,14 +5,14 @@ from mininet.topo import Topo
 from SDM.util import irange
 
 
-class ConnectedTopo(Topo):
+class ConnectedTopology(Topo):
     """
     A random generated topology, where all switches are connected.
     No self loops, or 2-cycles are allowed.
     """
 
     def __init__(self, k=1):
-        super(ConnectedTopo, self).__init__()
+        super(ConnectedTopology, self).__init__()
         random_generator = random.Random()
         random_generator.seed()
         switches = []

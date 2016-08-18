@@ -1,4 +1,4 @@
-import logging
+
 from datetime import datetime
 from time import sleep
 
@@ -14,7 +14,6 @@ class TraceTest(BaseTest):
 
     def __init__(self, shared_mem, directories, parameters):
         super(TraceTest, self).__init__(shared_mem, directories, parameters)
-        self.logger = logging.getLogger(__name__)
 
     def setup_net(self):
         self.logger.debug("setup_net")
@@ -28,7 +27,7 @@ class TraceTest(BaseTest):
         """
         Executes the test and Mininet and the tcpreplay.
         """
-        self.logger.info("run")
+
         if self.parameters['RunParameters']['interact']:
             self.net.build()
             self.net.interact()

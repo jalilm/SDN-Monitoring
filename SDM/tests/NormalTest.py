@@ -1,4 +1,4 @@
-import logging
+
 import os
 import time
 from subprocess import Popen
@@ -14,7 +14,6 @@ class NormalTest(BaseTest):
 
     def __init__(self, shared_mem, directories, parameters):
         super(NormalTest, self).__init__(shared_mem, directories, parameters)
-        self.logger = logging.getLogger(__name__)
 
     def clean_after_run(self):
         """

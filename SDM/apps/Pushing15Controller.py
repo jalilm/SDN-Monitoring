@@ -3,6 +3,7 @@ from ryu.ofproto import ofproto_v1_5
 from SDM.apps.PushingController import PushingController
 
 
+# noinspection PyAbstractClass
 class Pushing15Controller(PushingController):
     OFP_VERSIONS = [ofproto_v1_5.OFP_VERSION]
 

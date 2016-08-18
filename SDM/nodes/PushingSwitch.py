@@ -5,7 +5,7 @@ from SDM.util import get_dirs, get_params, get_class
 
 class PushingSwitch(OVSSwitch):
     def __init__(self, name, **params):
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger()
         self.logger.info("Created PushingSwitch")
         self.middlewares = []
         self.dirs = get_dirs()

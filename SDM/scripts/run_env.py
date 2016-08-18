@@ -14,15 +14,16 @@ def main():
     The main code of the program, which calls the test.
     """
 
-    logger = logging.getLogger(__name__)
-
-    "Level should be one of the following:"
-    "debug, info, output, warning, error, critical"
-    # setLogLevel('debug')
-    setLogLevel(logging.getLevelName(logger.getEffectiveLevel()).lower())
-
     directories = get_dirs()
     params = get_params(directories)
+
+    logging.basicConfig(filename=params['General']['SDMLogFile'], filemode='w',
+                        level=logging.getLevelName(params['General']['LogLevel']),
+                        format=params['General']['LogFormat'])
+    logger = logging.getLogger()
+
+    "Set Mininet logging level to same logging level of SDM"
+    setLogLevel(logging.getLevelName(logger.getEffectiveLevel()).lower())
 
     with open(params['General']['sharedMemFilePath'], "wb") as _file:
         logger.debug("Opened shared memory file to write start of generation token")
@@ -39,7 +40,6 @@ def main():
     test.run()
     logger.info("Cleaning after test %s", params['RunParameters']['test'])
     test.clean_after_run()
-    logger.debug("Cleaning shared memory file")
     os.remove(params['General']['sharedMemFilePath'])
     mem_map.close()
 

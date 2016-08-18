@@ -5,16 +5,16 @@ from mininet.topo import Topo
 from SDM.util import irange
 
 
-class CircleTopo(Topo):
+class CircleTopology(Topo):
     """
     A circle Topology.
-    Due to Mininet current implementation, this topology does
+    Due to mininet current implementation, this topology does
     not create two links between s1 and s2 when k=2, but rather
     one link only.
     """
 
     def __init__(self, k=1):
-        super(CircleTopo, self).__init__()
+        super(CircleTopology, self).__init__()
         random_generator = random.Random()
         random_generator.seed()
         switches = []

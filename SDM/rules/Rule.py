@@ -1,4 +1,5 @@
 from SDM.util import get_dirs, get_params
+import logging
 
 
 class Rule(object):
@@ -14,6 +15,7 @@ class Rule(object):
         self.match_args = {}
         self.match = self.datapath.ofproto_parser.OFPMatch(**self.match_args)
         self.params = get_params(get_dirs())
+        self.logger = logging.getLogger()
 
     def __repr__(self):
         return "Rule(" + repr(self.datapath) + ", " + repr(self.table_id) + \

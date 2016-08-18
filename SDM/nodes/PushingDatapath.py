@@ -1,5 +1,3 @@
-from time import time
-import logging
 from SDM.util import irange
 from SDM.nodes.Datapath import Datapath
 from SDM.rules.InPortRule import InPortRule
@@ -8,12 +6,8 @@ from SDM.rules.InPortRule import InPortRule
 class PushingDatapath(Datapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         super(PushingDatapath, self).__init__(datapath)
-        self.logger = logging.getLogger(__name__)
         self.logger.debug("Created PushingDatapath")
         self.first_monitoring_table_id = first_monitoring_table_id
-
-    def info(self, msg, *args, **kwargs):
-        self.logger.info(str(time()) + " " + msg, *args, **kwargs)
 
     # noinspection PyMethodMayBeStatic
     def calc_id(self):
@@ -27,7 +21,7 @@ class PushingDatapath(Datapath):
 
     # noinspection PyMethodMayBeStatic
     def set_main_monitor_table(self):
-        assert False
+        raise NotImplementedError
         # In this part register the monitoring rules
         # For each rule, register the IP and subnet mask
         # and the created Match.

@@ -24,7 +24,7 @@ from SDM.util import get_dirs, get_params
 class ProxyThread(Thread):
     def __init__(self, middleware, controller_ip, controller_port):
         super(ProxyThread, self).__init__()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger()
         self.logger.debug("Created ProxyThread, %s:%s", controller_ip, controller_port)
         self.middleware = middleware
         self.controllerIP = controller_ip
@@ -117,7 +117,7 @@ class ProxyThread(Thread):
 class MonitorThread(Thread):
     def __init__(self, middleware, time_step, condition):
         super(MonitorThread, self).__init__()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger()
         self.logger.debug("Created Monitoring Thread")
         self.middleware = middleware
         self.time_step = time_step
@@ -146,7 +146,6 @@ class MiddleWare(Strategy):
     def __init__(self, ovs_switch, controller_ip="127.0.0.1", switch_ip=None, controller_port=6633, switch_port=None,
                  protocols=None, first_monitoring_table=1):
         super(MiddleWare, self).__init__(first_monitoring_table)
-        self.logger = logging.getLogger(__name__)
         self.logger.info("Created MiddleWare")
         self.ovs_switch = ovs_switch
         self.controllerIP = controller_ip

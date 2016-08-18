@@ -5,9 +5,9 @@ from SDM.util import irange
 BASE_MAC = '6a:bc:af:76:'
 
 
-class ThreeCycleTopo(Topo):
+class ThreeCycleTopology(Topo):
     def __init__(self):
-        super(ThreeCycleTopo, self).__init__()
+        super(ThreeCycleTopology, self).__init__()
         switches = []
         for i in irange(1, 3):
             switches.append(self.addSwitch('s%s' % i))

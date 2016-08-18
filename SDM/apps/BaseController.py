@@ -1,7 +1,6 @@
+import logging
 import mmap
 from multiprocessing import Lock
-from time import time
-
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -16,25 +15,19 @@ from SDM.util import *
 
 class BaseController(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
+    LOGGER_NAME = ''
 
     def __init__(self, *args, **kwargs):
         super(BaseController, self).__init__(*args, **kwargs)
-        self.dirs = get_dirs()
-        self.parameters = get_params(self.dirs)
+        self.directories = get_dirs()
+        self.parameters = get_params(self.directories)
+        self.logger.setLevel(logging.getLevelName(self.parameters['General']['LogLevel']))
+        self.conFileHandler = logging.FileHandler(filename=self.parameters['General']['ControllerLogFile'], mode='w')
+        self.conFormatter = logging.Formatter(self.parameters['General']['LogFormat'])
+        self.conFileHandler.setFormatter(self.conFormatter)
+        self.logger.addHandler(self.conFileHandler)
         self.datapaths = {}
         self.res_lock = Lock()
-
-    def debug(self, msg, *args, **kwargs):
-        self.logger.debug('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
-
-    def info(self, msg, *args, **kwargs):
-        self.logger.info('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
-
-    def warn(self, msg, *args, **kwargs):
-        self.logger.warn('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        self.logger.error('{0:.5f}'.format(time()) + " " + msg, *args, **kwargs)
 
     # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
@@ -66,29 +59,29 @@ class BaseController(app_manager.RyuApp):
     # noinspection PyMethodMayBeStatic,PyUnusedLocal,PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def flow_stats_reply_handler(self, ev):
-        assert False
+        raise NotImplementedError
 
     def handle_rule_stat(self, rule, current_stat, main_datapath):
         # noinspection PyTypeChecker
         if current_stat > self.get_rule_threshold(rule):
             if not main_datapath.increase_monitoring_level(rule):
-                self.info('Alert! traffic of flow %s is above threshold', rule)
+                self.logger.info('Alert! traffic of flow %s is above threshold', rule)
                 self.issue_alert()
             else:
-                self.info('Finer monitoring rules for %s were added', rule)
+                self.logger.info('Finer monitoring rules for %s were added', rule)
         elif current_stat <= (self.get_rule_threshold(rule) / 2):
             res = main_datapath.reduce_monitoring_level(rule)
             if not res[0]:
-                self.info('Not reducing monitoring level for %s: %s', rule, res[1])
+                self.logger.info('Not reducing monitoring level for %s: %s', rule, res[1])
             else:
-                self.info('Removed finer monitoring rules for %s and %s', res[1], res[2])
+                self.logger.info('Removed finer monitoring rules for %s and %s', res[1], res[2])
         else:
-            self.info('Keeping the rule %s for monitoring', rule)
+            self.logger.info('Keeping the rule %s for monitoring', rule)
             main_datapath.keep_monitoring_level(rule)
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def get_rule_threshold(self, rule):
-        assert False
+        raise NotImplementedError
 
     # noinspection PyUnresolvedReferences
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -99,7 +92,7 @@ class BaseController(app_manager.RyuApp):
         eth = pkt.get_protocols(ethernet.ethernet)[0]
         dst = eth.dst
         src = eth.src
-        self.warn("Packet in event %016x %s %s %s", dpid, src, dst, in_port)
+        self.logger.warn("Packet in event %016x %s %s %s", dpid, src, dst, in_port)
 
     def issue_alert(self):
         with open(self.parameters['General']['sharedMemFilePath'], "r+b") as _file:

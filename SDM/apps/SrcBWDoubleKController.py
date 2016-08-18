@@ -6,9 +6,9 @@ from ryu.lib import hub
 from SDM.apps.SrcBWPullingController import SrcBWPullingController
 
 
-class SrcBWTopkController(SrcBWPullingController):
+class SrcBWDoubleKController(SrcBWPullingController):
     def __init__(self, *args, **kwargs):
-        super(SrcBWTopkController, self).__init__(*args, **kwargs)
+        super(SrcBWDoubleKController, self).__init__(*args, **kwargs)
         assert (math.log(self.parameters['RunParameters']['counters'], 2) % 1 == 0)
         self.k = self.parameters['RunParameters']['k']
         self.counters = self.parameters['RunParameters']['counters']
@@ -39,11 +39,11 @@ class SrcBWTopkController(SrcBWPullingController):
                     else:
                         sleep_time = maximal_ts - (current_depth - (total_depth / 2 + 1)) * (ts_delta * 2)
 
-                self.info('Sleeping for %f', sleep_time)
+                self.logger.info('Sleeping for %f', sleep_time)
                 hub.sleep(sleep_time)
                 time_step_number += 1
-                self.info('')
-                self.info('Time step #%d - ' + datetime.now().strftime('%H:%M:%S.%f'), time_step_number)
+                self.logger.info('')
+                self.logger.info('Time step #%d - ' + datetime.now().strftime('%H:%M:%S.%f'), time_step_number)
                 dpp = self.datapaths[dp]
-                self.info('Sending stats request: %016x', dpp.id)
+                self.logger.info('Sending stats request: %016x', dpp.id)
                 dpp.request_stats()

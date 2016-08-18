@@ -27,13 +27,13 @@ class SrcSynPullingController(PullingController):
             tcp_rule = None
             tcp_packets = 0
             current_rate = 0
-            self.info('datapath         '
-                      'rule                                                     '
-                      'packets ')
+            self.logger.info('datapath         '
+                             'rule                                                     '
+                             'packets ')
 
-            self.info('---------------- '
-                      '-------------------------------------------------------- '
-                      '--------')
+            self.logger.info('---------------- '
+                             '-------------------------------------------------------- '
+                             '--------')
             for stat in sorted([flow for flow in body],
                                key=lambda f: (f.match['ipv4_src'])):
                 ipv4_src = stat.match['ipv4_src']
@@ -67,15 +67,9 @@ class SrcSynPullingController(PullingController):
             except ZeroDivisionError:
                 pass
 
-            self.info('%016x %56s %08d',
-                      msg.datapath.id,
-                      syn_rule,
-                      syn_packets - prev_syn_count)
-            self.info('%016x %56s %08d',
-                      msg.datapath.id,
-                      tcp_rule,
-                      tcp_packets - prev_tcp_count)
-            self.info('Syn rate for the rule %s is: %f %%', rule, current_rate)
+            self.logger.info('%016x %56s %08d', msg.datapath.id, syn_rule, syn_packets - prev_syn_count)
+            self.logger.info('%016x %56s %08d', msg.datapath.id, tcp_rule, tcp_packets - prev_tcp_count)
+            self.logger.info('Syn rate for the rule %s is: %f %%', rule, current_rate)
             self.handle_rule_stat(rule, current_rate, main_datapath)
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal

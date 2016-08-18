@@ -1,4 +1,4 @@
-import logging
+
 import math
 import os
 import stat
@@ -7,7 +7,7 @@ from random import randint
 from SDM.tests.TraceTest import TraceTest
 
 
-class DoubleKTest(TraceTest):
+class TopKTest(TraceTest):
     """
         A class that runs a single switch with 2 hosts, that
         sends a random portion of previously captured traces for
@@ -15,12 +15,11 @@ class DoubleKTest(TraceTest):
     """
 
     def __init__(self, shared_mem, directories, parameters):
-        super(DoubleKTest, self).__init__(shared_mem, directories, parameters)
-        self.logger = logging.getLogger(__name__)
+        super(TopKTest, self).__init__(shared_mem, directories, parameters)
         self.random_second = -1
 
     def prepare_before_run(self):
-        super(DoubleKTest, self).prepare_before_run()
+        super(TopKTest, self).prepare_before_run()
         minimal_length_of_trace = self.parameters['RunParameters']['timeStep'] * (
             32 - math.log(self.parameters['RunParameters']['counters'], 2))
         trace_rate = 153 / (2 * self.parameters['RunParameters']['timeStep'] + minimal_length_of_trace +
@@ -36,7 +35,7 @@ class DoubleKTest(TraceTest):
         os.chmod(self.parameters['RunParameters']['attack'], st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     def clean_after_run(self):
-        super(DoubleKTest, self).clean_after_run()
+        super(TopKTest, self).clean_after_run()
         output_log_file = self.directories['log'] + self.parameters['RunParameters']['mechanism'] + '-' + \
                            self.parameters['RunParameters']['state'] + '-' + \
                            self.parameters['RunParameters']['rate_type'] + '-' + \

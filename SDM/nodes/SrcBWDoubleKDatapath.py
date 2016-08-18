@@ -1,14 +1,32 @@
+import math
+
 from SDM.nodes.Datapath import Datapath
-from SDM.nodes.Strategy import Strategy
+from SDM.nodes.DoubleKStrategy import DoubleKStrategy
+from SDM.rules.IPSrcRule import IPSrcRule
 from SDM.rules.InPortRule import InPortRule
-from SDM.util import irange
+
+from SDM.util import get_dirs, get_params, ipv4_partition, CIDR_mask_to_ipv4_subnet_mask, irange
 
 
-class PullingDatapath(Datapath, Strategy):
+class SrcBWDoubleKDatapath(DoubleKStrategy, Datapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
+        self.dirs = get_dirs()
+        self.parameters = get_params(self.dirs)
         Datapath.__init__(self, datapath)
-        Strategy.__init__(self, first_monitoring_table_id)
-        self.logger.info("PullingDatapath")
+        DoubleKStrategy.__init__(self, self.parameters['RunParameters']['k'],
+                                 self.parameters['RunParameters']['counters'], first_monitoring_table_id)
+        self.logger.debug("SrcBWDoubleKDatapath")
+
+        # In this part register the monitoring rules
+        # For each rule, register the IP and subnet mask
+        # and the created Match.
+        ips = ipv4_partition(self.parameters['RunParameters']['counters'])
+
+        for ipv4_string in ips:
+            subnet_string = CIDR_mask_to_ipv4_subnet_mask(
+                int(math.log(self.parameters['RunParameters']['counters'], 2)))
+            rule = IPSrcRule(self.datapath, ipv4_string, subnet_string, self.first_monitoring_table_id, 0, None)
+            self.add_monitoring_rule(rule)
 
     # noinspection PyMethodMayBeStatic
     def calc_id(self):
@@ -27,10 +45,15 @@ class PullingDatapath(Datapath, Strategy):
     def request_stats(self):
         finished_last_round = self.received_all_replys()
         while not finished_last_round:
+            self.logger.error("Requesting stats while last epoch stats are not ready yet!")
             finished_last_round = self.received_all_replys()
+
+        if self.alert:
+            return
 
         self.round_status = {}
         self.frontier = self.next_frontier
+        self.logger.debug("Frontier is %s", self.frontier)
         self.next_frontier = []
 
         for rule in self.frontier:

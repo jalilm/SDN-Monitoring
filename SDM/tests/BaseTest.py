@@ -19,23 +19,24 @@ class BaseTest(object):
         self.shared_mem_fd = shared_mem
         self.directories = directories
         self.parameters = parameters
-        self.logger = logging.getLogger(__name__)
-        self.topo = None
+        self.logger = logging.getLogger()
+        self.topology = None
         self.net = None
 
-    def setup_topo(self):
+    def setup_topology(self):
         """
-        Used to initialize self.topo according to the test scenario.
+        Used to initialize self.topology according to the test scenario.
         """
-        topo_class = get_class(self.parameters['RunParameters']['topoType'])
+        topology_class = get_class(self.parameters['RunParameters']['topologyType'])
         try:
-            topo = topo_class(k=self.parameters['RunParameters']['numberOfStations'])
-            self.logger.debug("Setting up topo type: %s with %s stations", self.parameters['RunParameters']['topoType'],
+            topology = topology_class(k=self.parameters['RunParameters']['numberOfStations'])
+            self.logger.debug("Setting up topology type: %s with %s stations",
+                              self.parameters['RunParameters']['topologyType'],
                               self.parameters['RunParameters']['numberOfStations'])
         except TypeError:
-            topo = topo_class()
-            self.logger.debug("Setting up topo type: %s.", self.parameters['RunParameters']['topoType'])
-        return topo
+            topology = topology_class()
+            self.logger.debug("Setting up topology type: %s.", self.parameters['RunParameters']['topologyType'])
+        return topology
 
     def setup_net(self):
         """
@@ -46,7 +47,7 @@ class BaseTest(object):
             switch = get_class(self.parameters['RunParameters']['mininet_switch'])
         except KeyError:
             switch = OVSSwitch
-        return Mininet(self.topo, switch=switch,
+        return Mininet(self.topology, switch=switch,
                        controller=RemoteController,
                        host=SysctlHost,
                        build=False, xterms=self.parameters['General']['xterms'],
@@ -60,7 +61,7 @@ class BaseTest(object):
 
     def prepare_before_run(self):
         self.logger.debug("prepare_before_run")
-        self.topo = self.setup_topo()
+        self.topology = self.setup_topology()
         self.net = self.setup_net()
 
     def detect_alert(self, target_func=None):
@@ -85,7 +86,8 @@ class BaseTest(object):
 
     def clean_after_run(self):
         self.logger.debug("clean_after_run")
-        sdm_log_file = self.directories['log'] + 'SDM.log'
+        sdm_log_file = self.parameters['General']['SDMLogFile']
+        con_log_file = self.parameters['General']['ControllerLogFile']
         output_log_file = self.directories['log'] + self.parameters['RunParameters']['mechanism'] + '-' + \
                           self.parameters['RunParameters']['state'] + '-' + \
                           self.parameters['RunParameters']['rate_type'] + '-' + \
@@ -97,11 +99,10 @@ class BaseTest(object):
                           str(self.parameters['RunParameters']['counters']) + \
                           '.log'
 
-        os.system("cat /tmp/c0.log " + sdm_log_file + " | sort -n -s > " + output_log_file)
+        os.system("cat " + con_log_file + + sdm_log_file + " | sort -n -s > " + output_log_file)
         os.system("rm /tmp/c0.log")
         os.system("rm " + sdm_log_file)
 
-
-# noinspection PyUnusedLocal
-def run(self):
-    assert False
+    # noinspection PyUnusedLocal
+    def run(self):
+        raise NotImplementedError

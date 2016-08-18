@@ -1,6 +1,7 @@
 from SDM.rules.IPDestPushingRule import IPDestPushingRule
 
 
+# noinspection PyAbstractClass
 class TCPIPDestPushingRule(IPDestPushingRule):
     """
     A class that represents a rule based on destination IPV4 and mask

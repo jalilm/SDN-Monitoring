@@ -1,4 +1,3 @@
-import logging
 import mmap
 import math
 
@@ -6,11 +5,11 @@ from SDM.nodes.Strategy import Strategy
 from SDM.util import get_dirs, get_params
 
 
-class TopkStrategy(Strategy):
+# noinspection PyAbstractClass
+class DoubleKStrategy(Strategy):
     def __init__(self, k, counters, first_monitoring_table_id=1):
-        super(TopkStrategy, self).__init__(first_monitoring_table_id)
-        self.logger = logging.getLogger(__name__)
-        self.logger.debug("TopkStrategy")
+        super(DoubleKStrategy, self).__init__(first_monitoring_table_id)
+        self.logger.debug("DoubleKStrategy")
         self.k = k
         self.counters = counters
         self.alert = False
@@ -45,7 +44,7 @@ class TopkStrategy(Strategy):
 
         self.current_depth += 1
         for i in range(0, self.counters / 2):
-            self.info("JALIL: calling increase for %s", sorted_frontier[i][0])
+            self.logger.debug("Calling increase for %s", sorted_frontier[i][0])
             if self.increase_monitoring_level(sorted_frontier[i][0]):
                 self.logger.debug('Finer monitoring rules for %s were added', sorted_frontier[i][0])
             else:
@@ -54,19 +53,19 @@ class TopkStrategy(Strategy):
         if self.alert:
             self.issue_alert(sorted_frontier)
         else:
-            self.info('Top ' + str(self.counters / 2) + ' for this epoch:')
+            self.logger.info('Top ' + str(self.counters / 2) + ' for this epoch:')
             for i in range(0, self.counters / 2):
-                self.info('%s) %s : %s', i + 1, sorted_frontier[i][0],
-                          sorted_frontier[i][1]['byte_count'] / sorted_frontier[i][1]['duration'])
+                self.logger.info('%s) %s : %s', i + 1, sorted_frontier[i][0],
+                                 sorted_frontier[i][1]['byte_count'] / sorted_frontier[i][1]['duration'])
 
             for i in range(0, self.counters):
                 self.remove_rule(sorted_frontier[i][0])
-                self.info('Removed monitoring rule for %s', sorted_frontier[i][0])
+                self.logger.info('Removed monitoring rule for %s', sorted_frontier[i][0])
 
     def issue_alert(self, sorted_frontier):
-        self.info('Alert!')
+        self.logger.info('Alert!')
         for i in range(0, self.k):
-            self.info('Final Top %s', sorted_frontier[i][0].ipv4_string)
+            self.logger.info('Final Top %s', sorted_frontier[i][0].ipv4_string)
         with open(self.parameters['General']['sharedMemFilePath'], "r+b") as _file:
             mem_map = mmap.mmap(_file.fileno(), 0)
             mem_map[:6] = self.parameters['General']['alertToken']

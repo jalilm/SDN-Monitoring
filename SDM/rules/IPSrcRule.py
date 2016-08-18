@@ -37,7 +37,7 @@ class IPSrcRule(IPRule):
         tmp = "1".zfill(ls1 + 1)[::-1]
         xor_mask = int("0b" + tmp.zfill(32)[::-1], 2)
         new_subnet_mask = int_to_ipv4(self.subnet_int ^ xor_mask)
-        # TODO: table <-> prio change required.
+        #  table <-> prio change required.
         if self.params['RunParameters']['mechanism'] == "table":
             rule = IPSrcRule(self.datapath, self.ipv4_string, new_subnet_mask, self.table_id + 1, self.priority,
                              self)

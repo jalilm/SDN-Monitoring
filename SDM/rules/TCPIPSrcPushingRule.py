@@ -1,6 +1,7 @@
 from SDM.rules.IPSrcPushingRule import IPSrcPushingRule
 
 
+# noinspection PyAbstractClass
 class TCPIPSrcPushingRule(IPSrcPushingRule):
     """
     A class that represents a rule based on Srcination IPV4 and mask

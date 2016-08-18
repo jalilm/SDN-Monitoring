@@ -3,13 +3,13 @@ from mininet.topo import Topo
 from SDM.util import irange
 
 
-class BinaryTreeTopo(Topo):
+class BinaryTreeTopology(Topo):
     """
     Topology for a binary tree network where hosts are at every level
     """
 
     def __init__(self, k=1):
-        super(BinaryTreeTopo, self).__init__()
+        super(BinaryTreeTopology, self).__init__()
         switches = []
         for i in irange(1, k):
             switches.append(self.addSwitch('s%s' % i))

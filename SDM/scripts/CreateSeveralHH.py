@@ -5,7 +5,7 @@ from os.path import expanduser
 
 attack_packet_size = 74
 attack_bw = 20
-nomral_packet_size = 54
+normal_packet_size = 54
 normal_bw = 7
 
 ips = ["232.228.72.51", "101.126.226.63", "158.69.233.242", "37.14.81.34", "144.224.121.58", "83.179.5.40",

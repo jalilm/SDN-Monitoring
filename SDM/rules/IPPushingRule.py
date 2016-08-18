@@ -1,6 +1,7 @@
 from SDM.rules.PushingRule import PushingRule
 
 
+# noinspection PyAbstractClass
 class IPPushingRule(PushingRule):
     """
     A class that represents an IP rule in the switch table.

@@ -1,6 +1,7 @@
 from SDM.rules.TCPIPDestPushingRule import TCPIPDestPushingRule
 
 
+# noinspection PyAbstractClass
 class FlagsDestPushingRule(TCPIPDestPushingRule):
     """
     A class that represents a rule based on destination IPV4 and mask and TCP flags

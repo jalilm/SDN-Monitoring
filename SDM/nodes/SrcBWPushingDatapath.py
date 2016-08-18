@@ -1,4 +1,4 @@
-import logging
+
 from SDM.util import CIDR_mask_to_ipv4_subnet_mask
 from SDM.rules.IPSrcRule import IPSrcRule
 from SDM.nodes.PushingDatapath import PushingDatapath
@@ -7,7 +7,6 @@ from SDM.nodes.PushingDatapath import PushingDatapath
 class SrcBWPushingDatapath(PushingDatapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         super(SrcBWPushingDatapath, self).__init__(datapath, first_monitoring_table_id)
-        self.logger = logging.getLogger(__name__)
         self.logger.debug("Created SrcBWPushingDatapath")
 
     def set_main_monitor_table(self):

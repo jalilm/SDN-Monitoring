@@ -2,6 +2,7 @@ from SDM.rules.IPPushingRule import IPPushingRule
 from SDM.util import get_index_of_least_sig_one, get_paired_ipv4, int_to_ipv4, ipv4_to_int
 
 
+# noinspection PyAbstractClass
 class IPSrcPushingRule(IPPushingRule):
     """
     A class that represents a rule based on source IPV4 and mask
@@ -39,7 +40,7 @@ class IPSrcPushingRule(IPPushingRule):
         tmp = "1".zfill(ls1 + 1)[::-1]
         xor_mask = int("0b" + tmp.zfill(32)[::-1], 2)
         new_subnet_mask = int_to_ipv4(self.subnet_int ^ xor_mask)
-        # TODO: table <-> prio change required.
+        #  table <-> prio change required.
         if self.params['RunParameters']['mechanism'] == "table":
             rule = IPSrcPushingRule(self.switch, self.datapath, self.ipv4_string, new_subnet_mask, self.table_id + 1,
                                     self.priority,

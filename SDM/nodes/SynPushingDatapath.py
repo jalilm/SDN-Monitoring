@@ -1,4 +1,3 @@
-import logging
 from SDM.nodes.PushingDatapath import PushingDatapath
 from SDM.rules.SynDestRule import SynDestRule
 from SDM.util import CIDR_mask_to_ipv4_subnet_mask
@@ -7,7 +6,6 @@ from SDM.util import CIDR_mask_to_ipv4_subnet_mask
 class SynPushingDatapath(PushingDatapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         super(SynPushingDatapath, self).__init__(datapath, first_monitoring_table_id)
-        self.logger = logging.getLogger(__name__)
         self.logger.debug("Created SynPushingDatapath")
 
     def set_main_monitor_table(self):

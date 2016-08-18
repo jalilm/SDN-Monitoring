@@ -1,17 +1,15 @@
-import logging
-
 from SDM.nodes.MiddleWare import MiddleWare
 from SDM.rules.SynDestPushingRule import SynDestPushingRule
 from SDM.util import bytes_to_ipv4
 
 
+# noinspection PyAbstractClass
 class SynMiddleWare(MiddleWare):
     def __init__(self, ovs_switch, controller_ip="127.0.0.1", switch_ip=None, controller_port=6633, switch_port=None,
                  protocols=None):
         super(SynMiddleWare, self).__init__(ovs_switch, controller_ip, switch_ip, controller_port, switch_port,
                                             protocols)
         self.frontier_default_value = {'tcp_packets': 0, 'syn_packets': 0}
-        self.logger = logging.getLogger(__name__)
         self.logger.info("Created SynMiddleWare")
 
     def handle_results(self, res, rule):

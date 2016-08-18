@@ -3,6 +3,7 @@ from SDM.rules.PushingRule import PushingRule
 from SDM.rules.TCPIPSrcPushingRule import TCPIPSrcPushingRule
 
 
+# noinspection PyAbstractClass
 class SynSrcPushingRule(PushingRule):
     """
     A class that represents a rule in the switch table.

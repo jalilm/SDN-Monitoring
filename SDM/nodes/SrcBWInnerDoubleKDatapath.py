@@ -1,27 +1,25 @@
-import logging
 import math
 
 from SDM.nodes.Datapath import Datapath
-from SDM.nodes.TopkStrategy import TopkStrategy
+from SDM.nodes.InnerDoubleKStrategy import InnerDoubleKStrategy
 from SDM.rules.IPSrcRule import IPSrcRule
 from SDM.rules.InPortRule import InPortRule
 
 from SDM.util import get_dirs, get_params, ipv4_partition, CIDR_mask_to_ipv4_subnet_mask, irange
 
 
-class SrcBWTopkDatapath(TopkStrategy, Datapath):
+class SrcBWInnerDoubleKDatapath(InnerDoubleKStrategy, Datapath):
     def __init__(self, datapath, first_monitoring_table_id=1):
         self.dirs = get_dirs()
         self.parameters = get_params(self.dirs)
         Datapath.__init__(self, datapath)
-        TopkStrategy.__init__(self, self.parameters['RunParameters']['k'], self.parameters['RunParameters']['counters'],
-                              first_monitoring_table_id)
-        self.logger = logging.getLogger(__name__)
-        self.logger.debug("SrcBWTopkDatapath")
+        InnerDoubleKStrategy.__init__(self, self.parameters['RunParameters']['k'],
+                                      self.parameters['RunParameters']['counters'], first_monitoring_table_id)
+        self.logger.debug("SrcBWInnerDoubleKDatapath")
 
         # In this part register the monitoring rules
         # For each rule, register the IP and subnet mask
-        # and the created Match.)
+        # and the created Match.
         ips = ipv4_partition(self.parameters['RunParameters']['counters'])
 
         for ipv4_string in ips:
@@ -47,7 +45,7 @@ class SrcBWTopkDatapath(TopkStrategy, Datapath):
     def request_stats(self):
         finished_last_round = self.received_all_replys()
         while not finished_last_round:
-            self.warn("XXX requesting stats while last epoch stats are not ready yet!")
+            self.logger.error("Requesting stats while last epoch stats are not ready yet!")
             finished_last_round = self.received_all_replys()
 
         if self.alert:

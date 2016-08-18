@@ -76,8 +76,8 @@ def get_params(directories, fresh=False):
 
     number_of_stations = config.getint('RunParameters', 'numberOfStations')
     params['RunParameters']['numberOfStations'] = number_of_stations
-    params['RunParameters']['topoType'] = config.get('RunParameters',
-                                                     'topoType')
+    params['RunParameters']['topologyType'] = config.get('RunParameters',
+                                                         'topologyType')
     local_bandwidth = config.getfloat('RunParameters', 'localBw')
     params['RunParameters']['localBw'] = local_bandwidth
     params['RunParameters']['maxBw'] = local_bandwidth * number_of_stations
@@ -101,7 +101,7 @@ def get_params(directories, fresh=False):
         params['RunParameters']['test'] = "SDM.tests.TraceTest.TraceTest"
         params['RunParameters']['numberOfStations'] = 2
         if rate_type == "BW":
-            params['RunParameters']['topoType'] = "SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['topologyType'] = "SDM.topologies.TraceTopology.TraceTopology"
             params['RunParameters']['attack'] = directories['util'] + "bw-attack"
             if direction == "Destination":
                 params['RunParameters']['ryuApps'] = directories['src'] + "apps/BWPullingController.py"
@@ -110,7 +110,7 @@ def get_params(directories, fresh=False):
                 params['RunParameters']['ryuApps'] = directories['src'] + "apps/SrcBWPullingController.py"
                 params['RunParameters']['Datapath'] = "SDM.nodes.SrcBWPullingDatapath.SrcBWPullingDatapath"
         if rate_type == "Syn":
-            params['RunParameters']['topoType'] = "SDM.topologies.SynTraceTopo.SynTraceTopo"
+            params['RunParameters']['topologyType'] = "SDM.topologies.SynTraceTopology.SynTraceTopology"
             params['RunParameters']['attack'] = directories['util'] + "syn-attack"
             if direction == "Destination":
                 params['RunParameters']['ryuApps'] = directories['src'] + "apps/SynPullingController.py"
@@ -122,38 +122,45 @@ def get_params(directories, fresh=False):
             assert False
 
     if state == "Topk":
-        params['RunParameters']['test'] = "SDM.tests.DoubleKTest.DoubleKTest"
+        params['RunParameters']['test'] = "SDM.tests.TopKTest.TopKTest"
         params['RunParameters']['numberOfStations'] = 2
         params['RunParameters']['k'] = config.getint('RunParameters', 'k')
         params['RunParameters']['counters'] = config.getint('RunParameters', 'counters')
-        params['RunParameters']['topoType'] = "SDM.topologies.TraceTopo.TraceTopo"
+        params['RunParameters']['topologyType'] = "SDM.topologies.TraceTopology.TraceTopology"
         params['RunParameters']['before_attack'] = ''
         params['RunParameters']['attack'] = directories['util'] + "topk_trace"
         params['RunParameters']['after_attack'] = ''
         if direction == "Destination":
             assert False
         if direction == "Source":
-            params['RunParameters']['ryuApps'] = directories['src'] + "apps/SrcBWTopkController.py"
-            params['RunParameters']['Datapath'] = "SDM.nodes.SrcBWTopkDatapath.SrcBWTopkDatapath"
-        if rate_type == "BW":
-            params['RunParameters']['tempStepChange'] = "normal"
-        elif rate_type == "IncreasingBW":
-            params['RunParameters']['tempStepChange'] = "positive"
-        elif rate_type == "DecreasingBW":
-            params['RunParameters']['tempStepChange'] = "negative"
-        elif rate_type == "IncDecBW":
-            params['RunParameters']['tempStepChange'] = "posneg"
-        if rate_type == "Syn":
-            assert False
-        if rate_type == "HH-several":
-            assert False
+            if rate_type == "Syn":
+                assert False
+            if rate_type == "HH-several":
+                assert False
+            if rate_type == "InnerEpoch":
+                params['RunParameters']['ryuApps'] = directories['src'] + "apps/SrcBWInnerDoubleKController.py"
+                params['RunParameters']['Datapath'] = "SDM.nodes.SrcBWInnerDoubleKDatapath.SrcBWInnerDoubleKDatapath"
+                params['RunParameters']['stability_threshold'] = config.getfloat('RunParameters',
+                                                                                 'stability_threshold')
+                params['RunParameters']['inner_epochs'] = config.getint('RunParameters', 'inner_epochs')
+            else:
+                params['RunParameters']['ryuApps'] = directories['src'] + "apps/SrcBWDoubleKController.py"
+                params['RunParameters']['Datapath'] = "SDM.nodes.SrcBWDoubleKDatapath.SrcBWDoubleKDatapath"
+                if rate_type == "BW":
+                    params['RunParameters']['tempStepChange'] = "normal"
+                elif rate_type == "IncreasingBW":
+                    params['RunParameters']['tempStepChange'] = "positive"
+                elif rate_type == "DecreasingBW":
+                    params['RunParameters']['tempStepChange'] = "negative"
+                elif rate_type == "IncDecBW":
+                    params['RunParameters']['tempStepChange'] = "posneg"
 
     if state == "Pushing":
         params['RunParameters']['test'] = "SDM.tests.TraceTest.TraceTest"
         params['RunParameters']['numberOfStations'] = 2
         params['RunParameters']['mininet_switch'] = "SDM.nodes.PushingSwitch.PushingSwitch"
         if rate_type == "BW":
-            params['RunParameters']['topoType'] = "SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['topologyType'] = "SDM.topologies.TraceTopology.TraceTopology"
             params['RunParameters']['ryuApps'] = directories['src'] + "apps/PushingController.py"
             params['RunParameters']['attack'] = directories['util'] + "bw-attack"
             if direction == "Destination":
@@ -163,7 +170,7 @@ def get_params(directories, fresh=False):
                 params['RunParameters']['Datapath'] = "SDM.nodes.SrcBWPushingDatapath.SrcBWPushingDatapath"
                 params['RunParameters']['middleware'] = "SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
         if rate_type == "Syn":
-            params['RunParameters']['topoType'] = "SDM.topologies.SynTraceTopo.SynTraceTopo"
+            params['RunParameters']['topologyType'] = "SDM.topologies.SynTraceTopology.SynTraceTopology"
             params['RunParameters']['ryuApps'] = directories['src'] + "apps/Pushing15Controller.py"
             params['RunParameters']['attack'] = directories['util'] + "syn-attack"
             if direction == "Destination":
@@ -179,12 +186,18 @@ def get_params(directories, fresh=False):
             f2 = int_to_ipv4
             params['RunParameters']['numHH'] = config.getint('RunParameters', 'numHH')
             create(params['RunParameters']['numHH'], params['RunParameters']['common_mask'], f1, f2)
-            params['RunParameters']['topoType'] = "SDM.topologies.TraceTopo.TraceTopo"
+            params['RunParameters']['topologyType'] = "SDM.topologies.TraceTopology.TraceTopology"
             params['RunParameters']['ryuApps'] = directories['src'] + "apps/PushingController.py"
             params['RunParameters']['attack'] = directories['util'] + "several-attack"
             params['RunParameters']['Datapath'] = "SDM.nodes.SrcBWPushingDatapath.SrcBWPushingDatapath"
             params['RunParameters']['middleware'] = "SDM.nodes.SrcBWMiddleWare.SrcBWMiddleWare"
 
+    params['General']['ControllerLogFile'] = directories['home'] + \
+                                      config.get('General', 'ControllerLogFile')
+    params['General']['LogFormat'] = config.get('General', 'LogFormat')
+    params['General']['SDMLogFile'] = directories['home'] + \
+                                      config.get('General', 'SDMLogFile')
+    params['General']['LogLevel'] = config.get('General', 'LogLevel')
     params['General']['fileToSendPath'] = directories['home'] + \
                                           config.get('General', 'fileToSendPath')
     params['General']['sharedMemFilePath'] = directories['home'] + \

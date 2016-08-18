@@ -5,13 +5,13 @@ from mininet.topo import Topo
 from SDM.util import irange
 
 
-class RandomTreeTopo(Topo):
+class RandomTreeTopology(Topo):
     """
     Topology for a random tree (connected acyclic graph) network where hosts are at every level.
     """
 
     def __init__(self, k=1):
-        super(RandomTreeTopo, self).__init__()
+        super(RandomTreeTopology, self).__init__()
         random_generator = random.Random()
         random_generator.seed()
         switches = []
